@@ -44,6 +44,7 @@ class KnowledgeGraph:
             #     for edge in self.actor_nodes:
             #         f.write(str(edge[0]) + ',' + str(edge[1]) + "\n")
             with open(movie_actor_path, 'w') as csvfile:
+                csv.writer(csvfile).writerow(['movie_id','actor'])
                 csv.writer(csvfile).writerows(self.actor_nodes)
 
             # export movie_director csv
@@ -58,6 +59,7 @@ class KnowledgeGraph:
             #     for edge in self.director_nodes:
             #         f.write(str(edge[0]) + ',' + str(edge[1]) + "\n")
             with open(movie_director_path, 'w') as csvfile:
+                csv.writer(csvfile).writerow(['movie_id','director'])
                 csv.writer(csvfile).writerows(self.director_nodes)
 
         def movie_genre(self):
@@ -76,6 +78,7 @@ class KnowledgeGraph:
             #     for edge in self.genre_nodes:
             #         f.write(str(edge[0]) + ',' + str(edge[1]) + ',' + str(edge[2]) + ',' + str(edge[3]) + '\n')
             with open(movie_genre_path, 'w') as csvfile:
+                csv.writer(csvfile).writerow(['movie_id','movie_title','genre_id','genre'])
                 csv.writer(csvfile).writerows(self.genre_nodes)
 
         def delete_few_people(self):
