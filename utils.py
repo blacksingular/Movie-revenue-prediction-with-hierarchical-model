@@ -1,0 +1,5 @@
+credit_path = '/run/media/yuanga/16C1-237D/to be moved/datasets/credits.csv'
+movie_actor_path = '/run/media/yuanga/16C1-237D/to be moved/datasets/movie_actor.csv'
+movie_director_path = '/run/media/yuanga/16C1-237D/to be moved/datasets/movie_director.csv'
+genre_path = '/run/media/yuanga/16C1-237D/to be moved/datasets/movies_metadata.csv'
+movie_genre_path = '/run/media/yuanga/16C1-237D/to be moved/datasets/movie_genre.csv'
