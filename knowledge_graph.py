@@ -7,6 +7,8 @@ import ast
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import FuncFormatter
+import matplotlib.pyplot as plt; plt.rcdefaults()
 
 
 class KnowledgeGraph:
@@ -86,11 +88,11 @@ class KnowledgeGraph:
 
     def movie_genre(self):
         # export movie_genre csv
-        genre_df = pd.DataFrame(pd.read_csv(genre_path))
+        genre_df = pd.DataFrame(pd.read_csv(genre_path, low_memory=False))
         for row in genre_df[['id', 'genres', 'title']].iterrows():
             movie_id = row[1]['id']
-            if movie_id in self.trash or str(movie_id) not in self.chosen_list:
-                continue
+            # if movie_id in self.trash or str(movie_id) not in self.chosen_list:
+            #     continue
             movie_title = row[1]['title']
             for dic in ast.literal_eval(row[1]['genres']):
                 genre_id = dic['id']
@@ -102,7 +104,41 @@ class KnowledgeGraph:
         with open(movie_genre_path, 'w') as csvfile:
             csv.writer(csvfile).writerow(['movie_id', 'movie_title', 'genre_id', 'genre'])
             csv.writer(csvfile).writerows(self.genre_nodes)
+        # plot the distribution of the genre 
+        genre_dict = dict()
 
+        for instance in self.genre_nodes:
+            if instance[3] not in genre_dict:
+                movie_list = []
+                movie_list.append(instance[1])
+                genre_dict[instance[3]] = movie_list
+            else:
+                movie_list = genre_dict[instance[3]]
+                if instance[1] not in movie_list:
+                    movie_list.append(instance[1])
+                    genre_dict[instance[3]] = movie_list
+        # pie of distribution 
+        genre_list= []
+        num_list = []
+        for genre, movie_list in genre_dict.items():
+            genre_dict[genre] = len(movie_list)
+        genre_sorted = sorted(genre_dict.items(), key=lambda kv: kv[1])
+        for genre in genre_sorted:
+            if genre[1] >1 :
+                genre_list.append(genre[0])
+                num_list.append(genre[1])
+        print(num_list)
+       
+        objects = genre_list
+        y_pos = np.arange(len(objects))
+        performance = num_list
+        plt.barh(y_pos, performance, align='center', alpha=0.5)
+        plt.yticks(y_pos, objects)
+        plt.xlabel('# Movies')
+        plt.title('genre_distribution')
+        plt.savefig('./genre_distribution.png')
+        
+        
     def delete_few_people(self):
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
         for row in credit_df[['cast', 'crew', 'id']].iterrows():
@@ -192,11 +228,11 @@ class KnowledgeGraph:
 def main():
     KG = KnowledgeGraph()
     # KG.data_cleaning()
-    KG.movie_director('init')
-    KG.part_of_data()
+    # KG.movie_director('init')
+    # KG.part_of_data()
     KG.movie_genre()
-    KG.movie_actor()
-    KG.movie_director('delete')
+    # KG.movie_actor()
+    # KG.movie_director('delete')
     # KG.actor_distribution()
     # KG.director_distribution()
     # actors, directors = KG.delete_few_people()
