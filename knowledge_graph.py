@@ -7,6 +7,8 @@ import ast
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+
+
 class KnowledgeGraph:
     def __init__(self):
         self.actors = {}
@@ -17,6 +19,7 @@ class KnowledgeGraph:
         self.director_nodes = []
         self.genre_nodes = []
         self.trash = []
+        self.chosen_list = []
 
     def data_cleaning(self):
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
@@ -31,43 +34,62 @@ class KnowledgeGraph:
                 self.trash.append(movie_id)
         print(self.trash)
 
-    def movie_actor_director(self):
+    def movie_actor(self):
         # export movie_actor csv
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
         for row in credit_df[['cast', 'crew', 'id']].iterrows():
             movie_id = row[1]['id']
-            if movie_id in self.trash:
+            if movie_id in self.trash or str(movie_id) not in self.chosen_list:
                 continue
             for dic in ast.literal_eval(row[1]['cast']):
-                self.actor_nodes.append([movie_id, dic['name']])
+                if dic['order'] < 3:
+                    self.actor_nodes.append([movie_id, dic['name']])
         # with open(movie_actor_path, 'w') as f:
         #     for edge in self.actor_nodes:
         #         f.write(str(edge[0]) + ',' + str(edge[1]) + "\n")
         with open(movie_actor_path, 'w') as csvfile:
-            csv.writer(csvfile).writerow(['movie_id','actor'])
+            csv.writer(csvfile).writerow(['movie_id', 'actor'])
             csv.writer(csvfile).writerows(self.actor_nodes)
+        pdb.set_trace()
 
+    def movie_director(self, mode='init'):
         # export movie_director csv
+        credit_df = pd.DataFrame(pd.read_csv(credit_path))
+        self.director_nodes = []
         for row in credit_df[['cast', 'crew', 'id']].iterrows():
             movie_id = row[1]['id']
-            if movie_id in self.trash:
-                continue
-            for dic in ast.literal_eval(row[1]['crew']):
-                if dic['job'] == 'Director':
-                    self.director_nodes.append([movie_id, dic['name']])
+            if mode == 'init':
+                if movie_id in self.trash:
+                    continue
+                for dic in ast.literal_eval(row[1]['crew']):
+                    if dic['job'] == 'Director':
+                        self.director_nodes.append([movie_id, dic['name']])
+            else:
+                if movie_id in self.trash or str(movie_id) not in self.chosen_list:
+                    continue
+                for dic in ast.literal_eval(row[1]['crew']):
+                    if dic['job'] == 'Director':
+                        self.director_nodes.append([movie_id, dic['name']])
         # with open(movie_director_path, 'w') as f:
         #     for edge in self.director_nodes:
         #         f.write(str(edge[0]) + ',' + str(edge[1]) + "\n")
         with open(movie_director_path, 'w') as csvfile:
-            csv.writer(csvfile).writerow(['movie_id','director'])
+            csv.writer(csvfile).writerow(['movie_id', 'director'])
             csv.writer(csvfile).writerows(self.director_nodes)
+
+    # for graph visualization
+    def part_of_data(self):
+        with open(movie_director_path, newline='') as csvfile:
+            f = list(csv.reader(csvfile))
+        np.random.shuffle(f)
+        self.chosen_list = list(list(zip(*f))[0])[:100]
 
     def movie_genre(self):
         # export movie_genre csv
         genre_df = pd.DataFrame(pd.read_csv(genre_path))
         for row in genre_df[['id', 'genres', 'title']].iterrows():
             movie_id = row[1]['id']
-            if movie_id in self.trash:
+            if movie_id in self.trash or str(movie_id) not in self.chosen_list:
                 continue
             movie_title = row[1]['title']
             for dic in ast.literal_eval(row[1]['genres']):
@@ -78,7 +100,7 @@ class KnowledgeGraph:
         #     for edge in self.genre_nodes:
         #         f.write(str(edge[0]) + ',' + str(edge[1]) + ',' + str(edge[2]) + ',' + str(edge[3]) + '\n')
         with open(movie_genre_path, 'w') as csvfile:
-            csv.writer(csvfile).writerow(['movie_id','movie_title','genre_id','genre'])
+            csv.writer(csvfile).writerow(['movie_id', 'movie_title', 'genre_id', 'genre'])
             csv.writer(csvfile).writerows(self.genre_nodes)
 
     def delete_few_people(self):
@@ -161,7 +183,7 @@ class KnowledgeGraph:
             degree_list.append(np.log(row[0]))
             num_list.append(np.log(row[1]))
         plt.figure()
-        plt.plot(degree_list,num_list,'x')
+        plt.plot(degree_list, num_list, 'x')
         plt.xlabel('num of movie directed(log ')
         plt.ylabel('num of director(log)')
         plt.savefig('./director_distribution.png')
@@ -170,10 +192,13 @@ class KnowledgeGraph:
 def main():
     KG = KnowledgeGraph()
     # KG.data_cleaning()
-    # KG.movie_genre()
-    KG.movie_actor_director()
-    KG.actor_distribution()
-    KG.director_distribution()
+    KG.movie_director('init')
+    KG.part_of_data()
+    KG.movie_genre()
+    KG.movie_actor()
+    KG.movie_director('delete')
+    # KG.actor_distribution()
+    # KG.director_distribution()
     # actors, directors = KG.delete_few_people()
     # print('Top 30 actors are: ', actors[:30])
     # print('Top 30 directors are: ', directors[:30])
