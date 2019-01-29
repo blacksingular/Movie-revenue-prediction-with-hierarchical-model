@@ -22,7 +22,7 @@ class KnowledgeGraph:
         self.genre_nodes = []
         self.trash = []
         self.chosen_list = []
-
+        self.user_movielist_dict = {}
     def data_cleaning(self):
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
         genre_df = pd.DataFrame(pd.read_csv(genre_path))
@@ -224,13 +224,54 @@ class KnowledgeGraph:
         plt.ylabel('num of director(log)')
         plt.savefig('./director_distribution.png')
         
+    def user_rating(self):
+        # we would like to see the distribution of user rating
+        #userId	movieId	rating	timestamp
+        user_num_dict = {}
+        user_df = pd.DataFrame(pd.read_csv(user_rating_path, low_memory=False))
+        for row in user_df[['userid', 'movieid', 'rating','timestamp']].iterrows():
+            user_id = row[1]['userid']
+            movie_id = row[1]['movieid']
+            if user_id not in self.user_movielist_dict:
+                movie_list = []
+                movie_list.append(movie_id)
+                self.user_movielist_dict[user_id] = movie_list
+            else:
+                movie_list = self.user_movielist_dict[user_id]
+                movie_list.append(movie_id)
+                self.user_movielist_dict[user_id] = movie_list
+        for user, movie_list in self.user_movielist_dict.items():
+            user_num_dict[user] = len(movie_list)
+        # distribution 
+        user_degree = dict()
+        
+        for user, degree in user_num_dict.items():
+            if degree not in user_degree:
+                user_degree[degree] = 1 
+            else:
+                user_degree[degree] += 1 
+        
+        sorted_by_value = sorted(user_degree.items(), key=lambda kv: kv[0])
+        print(sorted_by_value)
+        exit()
+        degree_list = []
+        num_list = []
+        for row in sorted_by_value:
+            degree_list.append((row[0]))
+            num_list.append((row[1]))
+        plt.figure()
+        plt.plot(degree_list, num_list, 'x')
+        plt.xlabel('num of comments')
+        plt.ylabel('num of user')
+        plt.savefig('./user_rating_distribution.png')
 
 def main():
     KG = KnowledgeGraph()
     # KG.data_cleaning()
     # KG.movie_director('init')
     # KG.part_of_data()
-    KG.movie_genre()
+    # KG.movie_genre()
+    KG.user_rating()
     # KG.movie_actor()
     # KG.movie_director('delete')
     # KG.actor_distribution()
