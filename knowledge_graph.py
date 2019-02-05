@@ -32,10 +32,16 @@ class KnowledgeGraph:
         self.user_node_type = {}
         self.edge_type = [] # this is the dict of edge:type
         self.year_movie = {}
+        self.chosen_train_dict = {} # restore the movie_id between 2005 - 2013
+        self.chosen_test_dict = {} # restore the movie_id between 2014 - 2015
+        self.md_relation_tr = {} # train data of director and movies relationship
+        self.md_relation_te = {} # test
+        self.mf_relation = {} # movie and features relationship
+
     def data_cleaning(self):
         #  filter the movie from 2005-2015
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
-        genre_df = pd.DataFrame(pd.read_csv(genre_path))
+        genre_df = pd.DataFrame(pd.read_csv(genre_path, low_memory='False'))
         for row in credit_df[['cast', 'crew', 'id']].iterrows():
             movie_id = row[1]['id']
             if not row[1]['cast'] or not row[1]['crew']:
@@ -44,7 +50,12 @@ class KnowledgeGraph:
             movie_id = row[1]['id']
             if not row[1]['genres'] or not row[1]['title']:
                 self.trash.append(movie_id)
-        print(self.trash)
+        for row in genre_df[['id', 'release_date']].iterrows():
+            release_year = str(row[1]['release_date']).split('-')[0]
+            if '2005' <= release_year <= '2013':
+                self.chosen_train_dict[row[1]['id']] = 1
+            elif '2013' < release_year <= '2015':
+                self.chosen_test_dict[row[1]['id']] = 1
 
     def movie_actor(self):
         # export movie_actor csv
@@ -52,51 +63,57 @@ class KnowledgeGraph:
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
         for row in credit_df[['cast', 'crew', 'id']].iterrows():
             movie_id = row[1]['id']
-#            if movie_id in self.trash or str(movie_id) not in self.chosen_list:
-#                continue
+            if movie_id in self.trash or str(movie_id) not in self.chosen_train_dict:
+                continue
             for dic in ast.literal_eval(row[1]['cast']):
-                if dic['order'] < 3:
-                    self.actor_nodes.append([movie_id, dic['id'], 1])
-                    self.actor_nodes.append([dic['id'], movie_id, 1])
-                    self.actor_node_type[('a:'+str(dic['id']))] = 1
-                    self.movie_node_type['m:'+str(movie_id)] = 1
-                    self.edge_type.append('a:'+str(dic['id'])+' '+'m:'+str(movie_id)+' '+'1 a')
+                # if dic['order'] < 3:
+                # self.actor_nodes.append([movie_id, dic['id'], 1])
+                # self.actor_nodes.append([dic['id'], movie_id, 1])
+                self.actor_node_type[('a:'+str(dic['id']))] = 1
+                self.movie_node_type['m:'+str(movie_id)] = 1
+                self.edge_type.append('a:'+str(dic['id'])+' '+'m:'+str(movie_id)+' '+'1 a')
+        # pdb.set_trace()
         # with open(movie_actor_path, 'w') as f:
         #     for edge in self.actor_nodes:
         #         f.write(str(edge[0]) + ',' + str(edge[1]) + "\n")
-        with open(movie_actor_path, 'w') as csvfile:
-#            csv.writer(csvfile).writerow(['movie_id', 'actor'])
-            csv.writer(csvfile,delimiter='\t').writerows(self.actor_nodes)
-                
-        self.actor_dict = dict()
-        for row in self.actor_nodes:
-            if row[1] not in self.actor_dict:
-                movie_list = []
-                movie_list.append(row[0])
-                self.actor_dict[row[1]] = movie_list
-            else:
-                movie_list = self.actor_dict[row[1]]
-                movie_list.append(row[0])
-                self.actor_dict[row[1]] = movie_list
-                    # conut the degree
-        degree_dict = dict()
-        for actor, movie in self.actor_dict.items():
-            if len(movie) not in degree_dict:
-                degree_dict[len(movie)] = 1
-            else:
-                degree_dict[len(movie)] += 1
-                    # sort the dict
-        sorted_by_value = sorted(degree_dict.items(), key=lambda kv: kv[0])
-        degree_list = []
-        num_list = []
-        for row in sorted_by_value:
-            degree_list.append(np.log(row[0]))
-            num_list.append(np.log(row[1]))
-        plt.figure()
-        plt.plot(degree_list,num_list,'x')
-        plt.xlabel('num of movie acted(log ')
-        plt.ylabel('num of actors(log)')
-        plt.savefig('./output/actor_distribution.png')
+
+
+        # writing
+        # with open(movie_actor_path, 'w') as csvfile:
+        #     csv.writer(csvfile).writerow(['movie_id', 'actor'])
+        #     csv.writer(csvfile, delimiter='\t').writerows(self.actor_nodes)
+
+
+        # plot
+        # self.actor_dict = dict()
+        # for row in self.actor_nodes:
+        #     if row[1] not in self.actor_dict:
+        #         movie_list = []
+        #         movie_list.append(row[0])
+        #         self.actor_dict[row[1]] = movie_list
+        #     else:
+        #         movie_list = self.actor_dict[row[1]]
+        #         movie_list.append(row[0])
+        #         self.actor_dict[row[1]] = movie_list
+        #             # conut the degree
+        # degree_dict = dict()
+        # for actor, movie in self.actor_dict.items():
+        #     if len(movie) not in degree_dict:
+        #         degree_dict[len(movie)] = 1
+        #     else:
+        #         degree_dict[len(movie)] += 1
+        #             # sort the dict
+        # sorted_by_value = sorted(degree_dict.items(), key=lambda kv: kv[0])
+        # degree_list = []
+        # num_list = []
+        # for row in sorted_by_value:
+        #     degree_list.append(np.log(row[0]))
+        #     num_list.append(np.log(row[1]))
+        # plt.figure()
+        # plt.plot(degree_list,num_list,'x')
+        # plt.xlabel('num of movie acted(log ')
+        # plt.ylabel('num of actors(log)')
+        # plt.savefig('./output/actor_distribution.png')
 
     def movie_director(self, mode='init'):
         # export movie_director csv
@@ -105,61 +122,66 @@ class KnowledgeGraph:
         self.director_nodes = []
         for row in credit_df[['cast', 'crew', 'id']].iterrows():
             movie_id = row[1]['id']
-            if mode == 'init':
-                if movie_id in self.trash:
-                    continue
-                for dic in ast.literal_eval(row[1]['crew']):
-                    if dic['job'] == 'Director':
-                        self.director_nodes.append([movie_id, dic['id'],1])
-                        self.director_nodes.append([dic['id'],movie_id, 1])
-                        self.director_node_type[('d:'+str(dic['id']))] = 1
-                        self.movie_node_type['m:'+str(movie_id)] = 1
-                        self.edge_type.append('d:' + str(dic['id']) + ' '+'m:'+str(movie_id)+' '+'1 d')
-            else:
-                if movie_id in self.trash or str(movie_id) not in self.chosen_list:
-                    continue
-                for dic in ast.literal_eval(row[1]['crew']):
-                    if dic['job'] == 'Director':
-                        self.director_nodes.append([movie_id, dic['id'],1])
-                        self.director_nodes.append([dic['id'],movie_id,1])
-                        self.director_node_type[('d:'+str(dic['id']))] = 1
-                        self.movie_node_type['m:'+str(movie_id)] = 1
-                        self.edge_type.append('d:' + str(dic['id']) +' ' + 'm:' + str(movie_id) + ' ' + '1 d')
+            # if mode == 'init':
+            #     if movie_id in self.trash:
+            #         continue
+            #     for dic in ast.literal_eval(row[1]['crew']):
+            #         if dic['job'] == 'Director':
+            #             self.director_nodes.append([movie_id, dic['id'],1])
+            #             self.director_nodes.append([dic['id'],movie_id, 1])
+            #             self.director_node_type[('d:'+str(dic['id']))] = 1
+            #             self.movie_node_type['m:'+str(movie_id)] = 1
+            #             self.edge_type.append('d:' + str(dic['id']) + ' '+'m:'+str(movie_id)+' '+'1 d')
+            # else:
+            if movie_id in self.trash or str(movie_id) not in self.chosen_train_dict:
+                continue
+            for dic in ast.literal_eval(row[1]['crew']):
+                if dic['job'] == 'Director':
+                    # self.director_nodes.append([movie_id, dic['id'],1])
+                    # self.director_nodes.append([dic['id'],movie_id,1])
+                    self.director_node_type[('d:'+str(dic['id']))] = 1
+                    self.movie_node_type['m:'+str(movie_id)] = 1
+                    self.edge_type.append('d:' + str(dic['id']) + ' ' + 'm:' + str(movie_id) + ' ' + '1 d')
+
+        # writing
         # with open(movie_director_path, 'w') as f:
         #     for edge in self.director_nodes:
         #         f.write(str(edge[0]) + ',' + str(edge[1]) + "\n")
-        with open(movie_director_path, 'w') as csvfile:
-#            csv.writer(csvfile).writerow(['movie_id', 'director','weight'])
-            csv.writer(csvfile,delimiter='\t').writerows(self.director_nodes)
-        self.direct_dict = dict()
-        for row in self.director_nodes:
-            if row[1] not in self.direct_dict:
-                movie_list = []
-                movie_list.append(row[0])
-                self.direct_dict[row[1]] = movie_list
-            else:
-                movie_list = self.direct_dict[row[1]]
-                movie_list.append(row[0])
-                self.direct_dict[row[1]] = movie_list
-        # conut the degree
-        degree_dict = dict()
-        for actor, movie in self.direct_dict.items():
-            if len(movie) not in degree_dict:
-                degree_dict[len(movie)] = 1
-            else:
-                degree_dict[len(movie)] += 1
-        # sort the dict
-        sorted_by_value = sorted(degree_dict.items(), key=lambda kv: kv[0])
-        degree_list = []
-        num_list = []
-        for row in sorted_by_value:
-            degree_list.append(np.log(row[0]))
-            num_list.append(np.log(row[1]))
-        plt.figure()
-        plt.plot(degree_list, num_list, 'x')
-        plt.xlabel('num of movie directed(log ')
-        plt.ylabel('num of director(log)')
-        plt.savefig('./output/director_distribution.png')
+        # with open(movie_director_path, 'w') as csvfile:
+        #     csv.writer(csvfile).writerow(['movie_id', 'director','weight'])
+        #     csv.writer(csvfile,delimiter='\t').writerows(self.director_nodes)
+
+
+        # plot
+        # self.direct_dict = dict()
+        # for row in self.director_nodes:
+        #     if row[1] not in self.direct_dict:
+        #         movie_list = []
+        #         movie_list.append(row[0])
+        #         self.direct_dict[row[1]] = movie_list
+        #     else:
+        #         movie_list = self.direct_dict[row[1]]
+        #         movie_list.append(row[0])
+        #         self.direct_dict[row[1]] = movie_list
+        # # conut the degree
+        # degree_dict = dict()
+        # for actor, movie in self.direct_dict.items():
+        #     if len(movie) not in degree_dict:
+        #         degree_dict[len(movie)] = 1
+        #     else:
+        #         degree_dict[len(movie)] += 1
+        # # sort the dict
+        # sorted_by_value = sorted(degree_dict.items(), key=lambda kv: kv[0])
+        # degree_list = []
+        # num_list = []
+        # for row in sorted_by_value:
+        #     degree_list.append(np.log(row[0]))
+        #     num_list.append(np.log(row[1]))
+        # plt.figure()
+        # plt.plot(degree_list, num_list, 'x')
+        # plt.xlabel('num of movie directed(log ')
+        # plt.ylabel('num of director(log)')
+        # plt.savefig('./output/director_distribution.png')
 
     # for graph visualization
     def part_of_data(self):
@@ -183,43 +205,44 @@ class KnowledgeGraph:
             for dic in ast.literal_eval(row[1]['genres']):
                 genre_id = dic['id']
                 genre_name = dic['name']
-                self.genre_nodes.append([movie_id, genre_id, 1])
-                self.genre_nodes.append([genre_id, movie_id, 1])
-                self.genre_node_type[('g:'+str(genre_id))] = 1
-                self.movie_node_type['m:'+str(movie_id)] = 1
-                self.edge_type.append('m:'+ str(movie_id) +' '+'g:'+str(genre_id)+' '+'1 b')
+                if '2005' <= release_year <= '2013':
+                    # self.genre_nodes.append([movie_id, genre_id, 1])
+                    # self.genre_nodes.append([genre_id, movie_id, 1])
+                    self.genre_node_type[('g:'+str(genre_id))] = 1
+                    self.movie_node_type['m:'+str(movie_id)] = 1
+                    self.edge_type.append('g:' + str(genre_id) + ' ' + 'm:' + str(movie_id) + ' ' + '1 g')
                 
-                if release_year not in self.year_movie:
-                    movie_list = []
-                    movie_list.append(movie_id)
-                    self.year_movie[release_year] = movie_list
-                else:
-                    movie_list = self.year_movie[release_year]
-                    movie_list.append(movie_id)
-                    self.year_movie[release_year] = movie_list
-        for year,movie_list in self.year_movie.items():
-            year_nummovies[year] = len(movie_list)
-#        print(sorted(year_nummovies.items(), key=lambda kv: kv[1]))
-        sorted_by_value = sorted(year_nummovies.items(), key=lambda kv: kv[0])
-        print(sorted_by_value)
-        year_list = []
-        num_list = []
-        for row in sorted_by_value:
-            year_list.append((row[0]))
-            num_list.append((row[1]))
-        plt.figure()
-        plt.plot(year_list,num_list,'x')
-        plt.xlabel('year')
-        plt.ylabel('num of movies')
-        plt.savefig('./output/year_movies.png')
-        
-        # with open(movie_genre_path, 'w') as f:
-        #     for edge in self.genre_nodes:
-        #         f.write(str(edge[0]) + ',' + str(edge[1]) + ',' + str(edge[2]) + ',' + str(edge[3]) + '\n')
-        
+        #         if release_year not in self.year_movie:
+        #             movie_list = []
+        #             movie_list.append(movie_id)
+        #             self.year_movie[release_year] = movie_list
+        #         else:
+        #             movie_list = self.year_movie[release_year]
+        #             movie_list.append(movie_id)
+        #             self.year_movie[release_year] = movie_list
+        # for year,movie_list in self.year_movie.items():
+        #     year_nummovies[year] = len(movie_list)
+        # print(sorted(year_nummovies.items(), key=lambda kv: kv[1]))
+        # sorted_by_value = sorted(year_nummovies.items(), key=lambda kv: kv[0])
+        # print(sorted_by_value)
+        # year_list = []
+        # num_list = []
+        # for row in sorted_by_value:
+        #     year_list.append((row[0]))
+        #     num_list.append((row[1]))
+        # plt.figure()
+        # plt.plot(year_list,num_list,'x')
+        # plt.xlabel('year')
+        # plt.ylabel('num of movies')
+        # plt.savefig('./output/year_movies.png')
+        #
+        # # with open(movie_genre_path, 'w') as f:
+        # #     for edge in self.genre_nodes:
+        # #         f.write(str(edge[0]) + ',' + str(edge[1]) + ',' + str(edge[2]) + ',' + str(edge[3]) + '\n')
+        #
         with open(movie_genre_path, 'w') as csvfile:
-#            csv.writer(csvfile).writerow(['movie_id', 'movie_title', 'genre_id', 'genre'])
-            csv.writer(csvfile,delimiter='\t').writerows(self.genre_nodes)
+            csv.writer(csvfile).writerow(['movie_id', 'movie_title', 'genre_id', 'genre'])
+            csv.writer(csvfile, delimiter='\t').writerows(self.genre_nodes)
         # plot the distribution of the genre
         
         
@@ -256,7 +279,6 @@ class KnowledgeGraph:
 #        plt.title('genre_distribution')
 #        plt.savefig('./output/genre_distribution.png')
 
-        
     def delete_few_people(self):
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
         for row in credit_df[['cast', 'crew', 'id']].iterrows():
@@ -280,8 +302,6 @@ class KnowledgeGraph:
         self.crew = sorted(self.directors.items(), key=lambda x: x[1], reverse=True)
         return self.actors, self.directors
 
-
-
     def user_rating(self):
         # we would like to see the distribution of user rating
         #userId	movieId	rating	timestamp
@@ -291,40 +311,44 @@ class KnowledgeGraph:
         for row in user_df[['userid', 'movieid', 'rating','timestamp']].iterrows():
             user_id = row[1]['userid']
             movie_id = row[1]['movieid']
-            self.user_node_type['u:'+str(user_id)]  = 1
-            self.edge_type.append('u:'+str(user_id)+' '+'m:'+str(movie_id)+ ' ' + ' ')
-            if user_id not in self.user_movielist_dict:
-                movie_list = []
-                movie_list.append(movie_id)
-                self.user_movielist_dict[user_id] = movie_list
-            else:
-                movie_list = self.user_movielist_dict[user_id]
-                movie_list.append(movie_id)
-                self.user_movielist_dict[user_id] = movie_list
-        for user, movie_list in self.user_movielist_dict.items():
-            user_num_dict[user] = len(movie_list)
-        # distribution 
-        user_degree = dict()
-        
-        for user, degree in user_num_dict.items():
-            if degree not in user_degree:
-                user_degree[degree] = 1 
-            else:
-                user_degree[degree] += 1 
-        
-        sorted_by_value = sorted(user_degree.items(), key=lambda kv: kv[0])
-        degree_list = []
-        num_list = []
-        for row in sorted_by_value:
-            degree_list.append((row[0]))
-            num_list.append((row[1]))
-        plt.figure()
-        plt.plot(degree_list, num_list, 'x')
-        plt.xlabel('num of comments')
-        plt.ylabel('num of user')
-        plt.savefig('./output/user_rating_distribution.png')
+            if movie_id in self.trash or str(movie_id) not in self.chosen_train_dict:
+                continue
+            self.user_node_type['u:'+str(user_id)] = 1
+            self.movie_node_type['m:' + str(movie_id)] = 1
+            self.edge_type.append('u:'+str(user_id)+' '+'m:'+str(movie_id) + ' ' + '1 u')
+        #     if user_id not in self.user_movielist_dict:
+        #         movie_list = []
+        #         movie_list.append(movie_id)
+        #         self.user_movielist_dict[user_id] = movie_list
+        #     else:
+        #         movie_list = self.user_movielist_dict[user_id]
+        #         movie_list.append(movie_id)
+        #         self.user_movielist_dict[user_id] = movie_list
+        # for user, movie_list in self.user_movielist_dict.items():
+        #     user_num_dict[user] = len(movie_list)
+        # # distribution
+        # user_degree = dict()
+        #
+        # for user, degree in user_num_dict.items():
+        #     if degree not in user_degree:
+        #         user_degree[degree] = 1
+        #     else:
+        #         user_degree[degree] += 1
+        #
+        # sorted_by_value = sorted(user_degree.items(), key=lambda kv: kv[0])
+        # degree_list = []
+        # num_list = []
+        # for row in sorted_by_value:
+        #     degree_list.append((row[0]))
+        #     num_list.append((row[1]))
+        # plt.figure()
+        # plt.plot(degree_list, num_list, 'x')
+        # plt.xlabel('num of comments')
+        # plt.ylabel('num of user')
+        # plt.savefig('./output/user_rating_distribution.png')
+
     def generate_HIN(self):
-        with open('./output/attibutr', 'w') as f:
+        with open('./output/uadg', 'w') as f:
             for node in self.actor_node_type:
                 f.write(node)
                 f.write('\n')
@@ -334,6 +358,10 @@ class KnowledgeGraph:
             for node in self.genre_node_type:
                 f.write(node)
                 f.write('\n')
+            for node in self.user_node_type:
+                f.write(node)
+                f.write('\n')
+
 #        with open('./output/director.node','w') as f:
 
         with open('./output/movie.node','w') as f:
@@ -346,13 +374,21 @@ class KnowledgeGraph:
             for edge in self.edge_type:
                 f.write(edge)
                 f.write('\n')
-    
 
+    def simple_baseline(self):
+        credit_df = pd.DataFrame(pd.read_csv(credit_path))
+        for row in credit_df[['cast', 'crew', 'id']].iterrows():
+            movie_id = row[1]['id']
+            if movie_id in self.chosen_train_dict:
+                for dic in ast.literal_eval(row[1]['crew']):
+                    if dic['job'] == 'Director':
+                        if dic['id'] in self.md_relation_tr:
+                            self.md_relation_tr[dic['id']].append(movie_id)
 
 
 def main():
     KG = KnowledgeGraph() # init the KG
-    # KG.data_cleaning()
+    KG.data_cleaning()
     KG.movie_director('init')
     # KG.part_of_data()
     KG.movie_genre()
