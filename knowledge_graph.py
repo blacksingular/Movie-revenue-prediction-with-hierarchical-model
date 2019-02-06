@@ -1,5 +1,9 @@
 # coding: utf-8
 
+import matplotlib.pyplot as plt; plt.rcdefaults()
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.ticker import FuncFormatter
 from utils import *
 import pdb
 import pandas as pd
@@ -7,10 +11,6 @@ import ast
 import csv
 import matplotlib
 matplotlib.use('agg')
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.ticker import FuncFormatter
-import matplotlib.pyplot as plt; plt.rcdefaults()
 
 
 class KnowledgeGraph:
@@ -37,6 +37,7 @@ class KnowledgeGraph:
         self.md_relation_tr = {} # train data of director and movies relationship
         self.md_relation_te = {} # test
         self.mf_relation = {} # movie and features relationship
+        self.revenues = {} # restore average revenue of a director.
 
     def data_cleaning(self):
         #  filter the movie from 2005-2015
@@ -377,24 +378,54 @@ class KnowledgeGraph:
 
     def simple_baseline(self):
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
+        revenue_df = pd.DataFrame(pd.read_csv(genre_path, low_memory='False'))
         for row in credit_df[['cast', 'crew', 'id']].iterrows():
             movie_id = row[1]['id']
-            if movie_id in self.chosen_train_dict:
+            if str(movie_id) in self.chosen_train_dict:
                 for dic in ast.literal_eval(row[1]['crew']):
                     if dic['job'] == 'Director':
                         if dic['id'] in self.md_relation_tr:
                             self.md_relation_tr[dic['id']].append(movie_id)
+                        else:
+                            self.md_relation_tr[dic['id']] = [movie_id]
+            if str(movie_id) in self.chosen_test_dict:
+                for dic in ast.literal_eval(row[1]['crew']):
+                    if dic['job'] == 'Director':
+                        if dic['id'] in self.md_relation_te:
+                            self.md_relation_te[dic['id']].append(movie_id)
+                        else:
+                            self.md_relation_te[dic['id']] = [movie_id]
+        for row in revenue_df[['revenue', 'id']].iterrows():
+            movie_id = row[1]['id']
+            if str(movie_id) in self.chosen_train_dict:
+                self.mf_relation[movie_id] = int(row[1]['revenue'])
+                # pdb.set_trace()
+        for (k, v) in self.md_relation_tr.items():
+            total = 0
+            flag = 0
+            for id in v:
+                if str(id) in self.mf_relation:
+                    total += int(self.mf_relation[str(id)])
+                    flag += 1
+            self.revenues[k] = total / flag
+        my_list = sorted(self.revenues.items(), key=lambda x: x[1])
+        pdb.set_trace()
+
+    def evaluation(self):
+        pass
 
 
 def main():
     KG = KnowledgeGraph() # init the KG
     KG.data_cleaning()
-    KG.movie_director('init')
+    print('data cleaning finished')
+    # KG.movie_director('init')
     # KG.part_of_data()
-    KG.movie_genre()
-    KG.movie_actor()
+    # KG.movie_genre()
+    # KG.movie_actor()
     # KG.movie_director('delete')
-
+    KG.simple_baseline()
+    print('dictionaries generated')
 #    KG.user_rating()
     # actors, directors = KG.delete_few_people()
     # print('Top 30 actors are: ', actors[:30])
