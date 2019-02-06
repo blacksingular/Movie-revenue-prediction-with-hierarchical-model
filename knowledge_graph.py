@@ -51,12 +51,14 @@ class KnowledgeGraph:
             movie_id = row[1]['id']
             if not row[1]['genres'] or not row[1]['title']:
                 self.trash.append(movie_id)
-        for row in genre_df[['id', 'release_date']].iterrows():
+        for row in genre_df[['id', 'release_date', 'revenue']].iterrows():
             release_year = str(row[1]['release_date']).split('-')[0]
             if '2005' <= release_year <= '2013':
-                self.chosen_train_dict[row[1]['id']] = 1
+                if int(row[1]['revenue']) >= 10000000:
+                    self.chosen_train_dict[row[1]['id']] = 1
             elif '2013' < release_year <= '2015':
-                self.chosen_test_dict[row[1]['id']] = 1
+                if int(row[1]['revenue']) >= 10000000:
+                    self.chosen_test_dict[row[1]['id']] = 1
 
     def movie_actor(self):
         # export movie_actor csv
@@ -399,7 +401,7 @@ class KnowledgeGraph:
             movie_id = row[1]['id']
             if str(movie_id) in self.chosen_train_dict:
                 self.mf_relation[movie_id] = int(row[1]['revenue'])
-                # pdb.set_trace()
+                #pdb.set_trace()
         for (k, v) in self.md_relation_tr.items():
             total = 0
             flag = 0
@@ -409,8 +411,7 @@ class KnowledgeGraph:
                     flag += 1
             self.revenues[k] = total / flag
         my_list = sorted(self.revenues.items(), key=lambda x: x[1])
-        pdb.set_trace()
-
+        for 
     def evaluation(self):
         pass
 
