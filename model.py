@@ -71,12 +71,12 @@ def extract_infobox(year_movielist):
     exist_elements = {}
     # exist_flag = False
     # idx = -1
-    if os.path.exists('./tables/infobox.pkl'):
-        with open('./tables/infobox.pkl','rb') as f:
-            exist_elements = pickle.load(f)
+    #if os.path.exists('./tables/infobox.pkl'):
+    #    with open('./tables/infobox.pkl','rb') as f:
+    #        exist_elements = pickle.load(f)
     for year, movie_list in year_movielist.items():
         # print(year,len(movie_list))
-        if year in exist_elements:
+        if os.path.exists('./tables/'+ str(year) + '.pkl'):
             continue
     #         while not exist_flag:
     #             page = wptools.page(movie_list[idx].split('/')[-1])
@@ -106,11 +106,12 @@ def extract_infobox(year_movielist):
             else:
                 movie_infobox[year].append(infobox)
         #  restore movie_lists per year
-        with open('./tables/infobox.pkl', 'wb') as f:
+        with open('./tables/'+str(year)+'.pkl', 'wb') as f:
             pickle.dump(movie_infobox, f)
             print('pickle dump completed')
+        #with open('/tables/invalid_ones.pkl', 'wb') as f:
+        #   pickle.dump(invalid_movies, f)
         print(len(invalid_movies), len(movie_list), len(movie_infobox))
-        exit()
 if os.path.exists('./tables/year_movielist.pkl'):
     print('Year movielist exist')
     with open('./tables/year_movielist.pkl', 'rb') as f:
