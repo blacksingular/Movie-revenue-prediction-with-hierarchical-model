@@ -1,11 +1,21 @@
 import urllib
 from  urllib import *
 import ast
-from bs4 import BeautifulSoup 
-import re
-import wptools
+
+# import wptools
 import pickle
 import os
+import urllib
+from  urllib import *
+import ast
+from imdb import IMDb
+
+from unidecode import  unidecode
+
+from urllib.parse import unquote
+from tqdm import tqdm
+
+
 home_page = 'https://en.wikipedia.org/wiki/Category:Films_by_year'
 wiki_home = 'https://en.wikipedia.org'
 year_range = [year for year in range(2008,2019)]
@@ -112,12 +122,84 @@ def extract_infobox(year_movielist):
         #with open('/tables/invalid_ones.pkl', 'wb') as f:
         #   pickle.dump(invalid_movies, f)
         print(len(invalid_movies), len(movie_list), len(movie_infobox))
-if os.path.exists('./tables/year_movielist.pkl'):
-    print('Year movielist exist')
-    with open('./tables/year_movielist.pkl', 'rb') as f:
-        year_movielist = pickle.load(f)
-else:   
-    year_movielist = extract_movielist()
+        
+
+def imdb_API(clean_moviename_list):
+    
+    # create an instance of the IMDb class
+    ia = IMDb()
+    # get a movie
+    # movie_id_list = []
+    exists_list = set()
+    if os.path.exists('./tables/movie_id.txt'):
+        with open('./tables/movie_id.txt','r') as f:
+            exists_list = set([x.strip().split('\t')[0] for x in f.readlines()])
+        print((exists_list))
+    clean_moviename_list = clean_moviename_list.difference(exists_list)
+    print(len(clean_moviename_list))
+
+    # print(clean_moviename_list[0], exists_list[0])
+    file = open('./tables/movie_id.txt','a+') 
+
+    for movie in tqdm(clean_moviename_list):
+        
+        # print(movie)
+        # movie = ia.search_movie(movie)[0]
+        # print(ia.search_movie(movie)[0].movieID)
+        try:
+            # movie_id_list.append(ia.search_movie(movie)[0].movieID)
+            file.write(movie + '\t' + ia.search_movie(movie)[0].movieID + '\n')
+            file.flush()
+        except:
+            print(movie)
+    file.close()
+
+    
 
 
-extract_infobox(year_movielist)
+
+
+if __name__ == "__main__":
+    # imdb_API()
+    if os.path.exists('./tables/year_movielist.pkl'):
+        print('Year movielist exist')
+        with open('./tables/year_movielist.pkl', 'rb') as f:
+            year_movielist = pickle.load(f)
+    else:   
+        year_movielist = extract_movielist()
+    
+    clean_moviename_list = set()
+    for year, movie_list in (year_movielist.items()):
+        for movie in movie_list:
+            movie = (unidecode(unquote(movie)))
+            movie = movie.split('/')[2]
+            movie = movie.replace('_',' ')
+            movie = movie.split('(')[0]
+            clean_moviename_list.add(movie)
+            # print(unidecode(unquote(movie)))
+            # print(movie)
+    print(len(clean_moviename_list))
+    movie_id_list = imdb_API(clean_moviename_list)
+
+    print(len(movie_id_list))
+    
+    # extract_infobox(year_movielist)
+    # with open('./tables/2018.pkl','rb') as f :
+    #     movie_infobox = pickle.load(f,protocol=3)
+
+    # for year, movie_list in movie_infobox.items():
+    #     print(year,len(movie_list))
+    
+
+    # box_office_mojo = bom.BoxOfficeMojo()
+    # box_office_mojo.crawl_for_urls()
+
+
+    # movie = box_office_mojo.get_movie_summary("titanic")
+    # movie.clean_data()
+    # print(movie.to_json())
+
+    # weekly = box_office_mojo.get_weekly_summary("titanic")
+    # weekly.clean_data()
+    # print(weekly.to_json())
+
