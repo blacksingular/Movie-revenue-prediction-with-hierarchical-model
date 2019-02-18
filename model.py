@@ -4,7 +4,7 @@ import ast
 
 # import wptools
 import pickle
-import omdb
+#import omdb
 import os
 import urllib
 from urllib import request
@@ -204,10 +204,14 @@ def get_movie_list():
 def omdb_request():
     my_id = "efc4c1c1"
     page = "http://www.omdbapi.com/?i="
-    assert os.path.exists('./tables/movie_id.txt') == True
-    with open('./tables/movie_id.txt', 'r') as f:
+    #file_path = ('./tables/movie_id.txt')
+    file_path = ('./tables/movie_id_2000to2007and2019.txt')
+#    out_file_path = ('./tables/movie_info.txt')
+    out_file_path = ('./tables/movie_info_2.txt')
+    assert os.path.exists(file_path) == True
+    with open(file_path, 'r') as f:
         movie_id = ['tt' + x.strip().split('\t')[1] for x in f.readlines()]
-    f = open('./tables/movie_info.txt', 'a+')
+    f = open(out_file_path, 'a+')
     for i in tqdm(range(len(movie_id))):
         info = requests.get(page + movie_id[i] + "&apikey=" + my_id).content.decode("utf-8")
         if not ast.literal_eval(info).get('BoxOffice', 0) or ast.literal_eval(info)["BoxOffice"] == 'N/A':         # Box office non-exist
