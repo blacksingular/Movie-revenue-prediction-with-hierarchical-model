@@ -1,11 +1,10 @@
 from __future__ import print_function
-import matplotlib.pyplot as plt;
+import imp
+# import matplotlib.pyplot as plt;
+# plt.rcdefaults()
+# from matplotlib.ticker import FuncFormatter
 
-plt.rcdefaults()
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import FuncFormatter
-
 import pdb
 import pandas as pd
 import ast
@@ -47,10 +46,12 @@ from keras.callbacks import EarlyStopping
 
 credit_path = './TMDB/tmdb_5000_credits.csv'
 movies_path = './TMDB/tmdb_5000_movies.csv'
+imdb_path = './tables/movie_info.txt'
 
 
 class KnowledgeGraph():
     def __init__(self):
+        self.movie_meta_dict = dict()
         self.movie_chosen_dict = dict()
         self.actor_chosen_dict = dict()
         self.director_chosen_dict = dict()
@@ -59,6 +60,7 @@ class KnowledgeGraph():
         self.homo_edge_list = []
         self.home_recount = 1
         self.home_node_dict = dict()
+        
     def datacleaning(self):
         # this the data cleaning for KG (only EN )
         # only care about the genre, id
@@ -76,7 +78,97 @@ class KnowledgeGraph():
     
         # print(self.genre_chosen_list)   
         # print(len(self.movie_chosen_dict))# total 4505
+    def datacleaning_imdb(self):
+        with open(imdb_path, 'r') as f:
+            for line in f:
+                line = line.strip().split('\t')
+                movie_id = line[0]
+                movie_meta_dict =  ast.literal_eval(line[1])
+                if movie_meta_dict['Type'] == 'movie' and 2008 <= int(movie_meta_dict['Year']) <= 2019: # filer the movie out 
+                    self.movie_meta_dict[movie_id] = movie_meta_dict
+               
+            # print(len(self.movie_meta_dict))
+        
+        # split the feature and label
 
+    def feature_analysis(self):
+        # feature_selection = ['Year', 'Rated','Runtime','Genre', 'Director', 'Writer','Actors','Language', 'Country','Ratings','imdbRating','imdbVotes','Type','BoxOffice','Production']
+        # continues feature covariance
+        # descrete feature distribution 
+
+        # first split feature and label
+        
+        self.train_movieid_label = dict()
+        self.test_movieid_label = dict()
+
+        self.year_dict = dict()
+        self.genre_dict = dict()
+        self.lang_dict = dict()
+        self.country_dict = dict()
+        self.product_dict = dict()
+        self.rate_dict = dict()
+        for movie, meta in self.movie_meta_dict.items():
+            # split train test and feature, and label 
+            if int(meta['Year']) <= 2015:
+                self.train_movieid_label[movie] = float(meta['BoxOffice'].split('$')[1].replace(',',''))
+            else:
+                self.test_movieid_label[movie] = float(meta['BoxOffice'].split('$')[1].replace(',',''))
+
+            # year_distribution
+            if meta['Year'] not in self.year_dict:
+                self.year_dict[meta['Year']] = 1 
+            else:
+                self.year_dict[meta['Year']] += 1 
+
+            # genre distribution 
+            genre_list = meta['Genre'].split(', ')
+            for genre in genre_list:
+                if genre not in self.genre_dict:
+                    self.genre_dict[genre] = 1
+                else:
+                    self.genre_dict[genre] += 1
+            
+            # lang_dict = dict()
+            lang_list = meta['Language'].split(', ')
+            for lang in lang_list:
+                if lang not in self.lang_dict:
+                    self.lang_dict[lang] = 1
+                else:
+                    self.lang_dict[lang] += 1
+            # country_dict 
+            country_dict = meta['Country'].split(', ')
+            for count in country_dict:
+                if count not in self.country_dict:
+                    self.country_dict[count] = 1 
+                else:
+                    self.country_dict[count] += 1 
+            
+            # produce_dict 
+            product_dict = meta['Production'].split('/')
+            for prod in product_dict:
+                if prod[0]==' ':
+                    prod = prod[1:]
+                if prod[-1]==' ':
+                    prod = prod[:-2]
+                if prod not in self.product_dict:
+                    self.product_dict[prod] = 1 
+                else:
+                    self.product_dict[prod] += 1 
+
+            # rate_dict  
+            if meta['Rated'] not in self.rate_dict:
+                self.rate_dict[meta['Rated']] = 1 
+            else:
+                self.rate_dict[meta['Rated']] += 1 
+        print(self.year_dict)
+        print(self.genre_dict)
+        print(self.lang_dict)
+        print(self.country_dict)
+        print(self.rate_dict)
+        print(len(self.train_movieid_label.values()))
+        print(len(self.test_movieid_label.values()))
+        
+        # print(self.product_dict)
     def genre_director_actor_node(self):
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
         actor_recount = 0
@@ -252,15 +344,17 @@ class Regression():
                             director_vec = [dir_vec[i] + director_vec[i] for i in range(len(director_vec))]
                             '''TODO  normalize'''
                     X[movie_id] += director_vec
-        embedding(self.train_X, self.train_y, self.train_movie_chosen_dict)
-        embedding(self.test_X, self.test_y, self.test_movie_chosen_dict)
-        self.train_X = [y[1] for y in sorted(self.train_X.items(), key=lambda x: x[0])]
-        self.train_y = [y[1] for y in sorted(self.train_y.items(), key=lambda x: x[0])]
-        self.test_X = [y[1] for y in sorted(self.test_X.items(), key=lambda x: x[0])]
-        self.test_y = [y[1] for y in sorted(self.test_y.items(), key=lambda x: x[0])]
-        print(type(self.train_X), type(self.train_y))
-        # print(len(self.test_X))
-        # print(len(self.train_X[19995]))
+            embedding(self.train_X, self.train_y, self.train_movie_chosen_dict)
+            embedding(self.test_X, self.test_y, self.test_movie_chosen_dict)
+            self.train_X = [y[1] for y in sorted(self.train_X.items(), key=lambda x: x[0])]
+            self.train_y = [y[1] for y in sorted(self.train_y.items(), key=lambda x: x[0])]
+            self.test_X = [y[1] for y in sorted(self.test_X.items(), key=lambda x: x[0])]
+            self.test_y = [y[1] for y in sorted(self.test_y.items(), key=lambda x: x[0])]
+            print(type(self.train_X), type(self.train_y))
+            # print(len(self.test_X))
+            # print(len(self.train_X[19995]))
+
+
     # def avg_regression(self):
     #     credit_df = pd.DataFrame(pd.read_csv(credit_path))
     #     revenue_df = pd.DataFrame(pd.read_csv(movie_path))
@@ -450,6 +544,9 @@ class Regression():
 
 if __name__ == "__main__":
     KG = KnowledgeGraph()
+    KG.datacleaning_imdb()
+    KG.feature_analysis()
+    exit()
     KG.datacleaning()
     KG.genre_director_actor_node()
     KG.homo_node_normalization()
