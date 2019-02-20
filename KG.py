@@ -12,8 +12,11 @@ import pdb
 import pandas as pd
 import ast
 import csv
+import re
 import matplotlib
-from sklearn.svm import SVR 
+from sklearn.svm import SVR
+from sklearn import feature_selection
+from sklearn import preprocessing
 
 from sklearn.linear_model import LinearRegression as LR
 from sklearn.linear_model import LogisticRegression as LoR
@@ -23,33 +26,34 @@ from sklearn.neural_network import MLPRegressor as MLP
 from sklearn.ensemble import RandomForestRegressor as RFR
 from sklearn.ensemble import GradientBoostingRegressor as GBR
 from utils import *
-import keras
-from keras.datasets import mnist
-from keras.models import Sequential
-from keras.layers import Dense, Dropout
-from keras.optimizers import RMSprop
-from keras.losses import mean_absolute_error
-from keras.optimizers import Adam
-from keras import metrics
-from numpy import loadtxt
-from xgboost import XGBClassifier
-import keras as K
-from keras.models import Sequential
-from keras.layers import Dense,Dropout,Activation
-from keras.callbacks import EarlyStopping
-# from knowledge_graph.KnowledgeGraph import evaluation as EVA
-
 # import keras
 # from keras.datasets import mnist
 # from keras.models import Sequential
 # from keras.layers import Dense, Dropout
 # from keras.optimizers import RMSprop
-# matplotlib.use('agg')
+# from keras.losses import mean_absolute_error
+# from keras.optimizers import Adam
+# from keras import metrics
+# from numpy import loadtxt
+# from xgboost import XGBClassifier
+# import keras as K
+# from keras.models import Sequential
+# from keras.layers import Dense,Dropout,Activation
+# from keras.callbacks import EarlyStopping
+# # from knowledge_graph.KnowledgeGraph import evaluation as EVA
+#
+# # import keras
+# # from keras.datasets import mnist
+# # from keras.models import Sequential
+# # from keras.layers import Dense, Dropout
+# # from keras.optimizers import RMSprop
+# # matplotlib.use('agg')
 
 
 credit_path = './TMDB/tmdb_5000_credits.csv'
 movies_path = './TMDB/tmdb_5000_movies.csv'
 imdb_path = './tables/movie_info.txt'
+imdb_csv_path = './tables/omdb.csv'
 
 
 class KnowledgeGraph():
@@ -83,24 +87,52 @@ class KnowledgeGraph():
         # print(len(self.movie_chosen_dict))# total 4505
     
     def datacleaning_imdb(self):
-        # this is 
-        csv_file = open('./tables/omdb.csv','w')
-
+        params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "BoxOffice"]
+        csv_file = open('./tables/omdb.csv', 'w', newline='')
+        writer = csv.writer(csv_file)
+        writer.writerow(params)
         with open(imdb_path, 'r') as f:
             for line in f:
-                line = line.strip().split('\t')
-                movie_id = line[0]
-                movie_meta_list += (movie_id+'\t')
-                movie_meta_dict =  ast.literal_eval(line[1])
-                if movie_meta_dict['Type'] == 'movie' and 2008 <= int(movie_meta_dict['Year']) <= 2019: # filer the movie out 
-                    self.movie_meta_dict[movie_id] = movie_meta_dict
-                    for k,v in movie_meta_dict.items():
-                        movie_meta_list += str(v)+'\t'
-                csv_file.write(movie_meta_list[:-1]+'\n')
-        csv_file.close()          
-            # print(len(self.movie_meta_dict))
-        # convet into csv file 
+                tmp = []
+                # line = line.strip().split('\t')
+                # movie_id = line[0]
+                # movie_meta_list += (movie_id+'\t')
+                movie_meta_dict = ast.literal_eval(line[line.find("\t") + 1:])
+                if movie_meta_dict['Type'] == 'movie' and 2008 <= int(movie_meta_dict['Year']) <= 2019: # filter the movie out
+                    # self.movie_meta_dict[movie_id] = movie_meta_dict
+                    # for k,v in movie_meta_dict.items():
+                    #     movie_meta_list += str(v)+'\t'
+                    for p in params:
+                        tmp.append(movie_meta_dict.get(p, ""))
+                    tmp[-1] = ''.join(re.findall(r'\d+', tmp[-1]))
+                    if tmp[2].find(",") != -1: tmp[2] = tmp[2][:tmp[2].find(",")]
+                    writer.writerow(tmp)
+        csv_file.close()
+        # convert into csv file
 
+    def correlations(self):
+        params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "BoxOffice"]
+        df = pd.DataFrame(pd.read_csv(imdb_csv_path))
+        # df = pd.get_dummies(df)
+        # print(df.head(5))
+        # exit()
+        year = np.array(list(map(float, df['Year']))).reshape(-1, 1)
+        boxoffice = np.array(list(map(float, df['BoxOffice'])))
+        enc = preprocessing.OneHotEncoder()
+        # print(len(genre))
+        # exit()
+        # print(set(df['Genre']))
+        enc.fit(np.array(list(set(df['Genre']))).reshape(-1, 1))
+        genre = enc.transform(np.array(df['Genre']).reshape(-1, 1)).toarray()
+        year_score = feature_selection.f_regression(year, boxoffice)
+        genre_score = feature_selection.f_regression(genre, boxoffice)
+        print("year score is: ", year_score)
+        print("genre score is: ", genre_score)
+        # print(df.describe(include='all'))
+        with open(imdb_csv_path, "r") as csvfile:
+            reader = csv.reader(csvfile)
+            year = [line[1] for line in reader]
+            boxoffice = [line[-1] for line in reader]
 
         # split the feature and label
 
@@ -562,9 +594,12 @@ class Regression():
             plt.subplots_adjust()
             plt.show()
 
+
 if __name__ == "__main__":
     KG = KnowledgeGraph()
-    KG.datacleaning_imdb()
+    # KG.datacleaning_imdb()
+    KG.correlations()
+    exit()
     KG.descrete_feature_plot()
     exit()
     KG.feature_analysis()
