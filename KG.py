@@ -217,12 +217,6 @@ class KnowledgeGraph():
 
         # print(self.product_dict)
 
-
-
-        
-
-
-
     def genre_director_actor_node(self):
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
         actor_recount = 0
@@ -409,15 +403,15 @@ class Regression():
             # print(len(self.train_X[19995]))
 
     def pre_processing(self):
-        train_df = pd.DataFrame(pd.read_csv('./tables/omdb_train.csv', usecols=[1, 2, 6, 7, 8, 9]))
+        train_df = pd.DataFrame(pd.read_csv('./tables/omdb_train.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
         # print(train_df.Language.describe())
         # print(train_df.Country.describe())
-        test_df = pd.DataFrame(pd.read_csv('./tables/omdb_test.csv', usecols=[1, 2, 6, 7, 8, 9]))
-        params = ["Genre", "Language", "Country"]
+        test_df = pd.DataFrame(pd.read_csv('./tables/omdb_test.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
+        params = ["Genre", "Language", "Country",'Actors','Director','Writer']
+
         self.train_y = np.array(train_df["BoxOffice"])
         self.test_y = np.array(test_df["BoxOffice"])
-        print(train_df["Year"])
-        exit()
+        
         # print(np.array(train_df["Year"]).shape)
         self.train_X = np.c_[np.array(train_df["Year"]).reshape(-1, 1), np.array(list(map(float, train_df["Runtime"]))).reshape(-1, 1)]
         print(self.train_X)
@@ -431,9 +425,10 @@ class Regression():
             self.train_X = np.c_[self.train_X, train]
             self.test_X = np.c_[self.test_X, test]
             print(self.train_X.shape, self.test_X.shape)
-
+        
         for p in params:
             one_hot(p)
+
             # feature_train_dict[p] = test_one_hot(p, enc)
     # def avg_regression(self):
     #     credit_df = pd.DataFrame(pd.read_csv(credit_path))
@@ -651,8 +646,8 @@ if __name__ == "__main__":
     with open('./result.txt', 'w') as f:
         print('Logisitic')
         _, _ = Reg.logistic_regression()
-        print(Reg.evaluation())
-        exit()
+        f.write(Reg.evaluation())
+        
 
         print('SVM')
         # for c in [0.5,0.6,0.8,1.0,1.2,1.5,1.7,3]:
