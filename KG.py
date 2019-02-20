@@ -87,52 +87,54 @@ class KnowledgeGraph():
         # print(len(self.movie_chosen_dict))# total 4505
     
     def datacleaning_imdb(self):
-        params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "BoxOffice"]
+        params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "Runtime", "BoxOffice"]
         csv_file = open('./tables/omdb.csv', 'w', newline='')
         writer = csv.writer(csv_file)
         writer.writerow(params)
         with open(imdb_path, 'r') as f:
             for line in f:
                 tmp = []
-                # line = line.strip().split('\t')
-                # movie_id = line[0]
-                # movie_meta_list += (movie_id+'\t')
                 movie_meta_dict = ast.literal_eval(line[line.find("\t") + 1:])
                 if movie_meta_dict['Type'] == 'movie' and 2008 <= int(movie_meta_dict['Year']) <= 2019: # filter the movie out
-                    # self.movie_meta_dict[movie_id] = movie_meta_dict
-                    # for k,v in movie_meta_dict.items():
-                    #     movie_meta_list += str(v)+'\t'
                     for p in params:
                         tmp.append(movie_meta_dict.get(p, ""))
                     tmp[-1] = ''.join(re.findall(r'\d+', tmp[-1]))
-                    if tmp[2].find(",") != -1: tmp[2] = tmp[2][:tmp[2].find(",")]
+                    tmp[-2] = tmp[-2][:tmp[-2].find(" ")]
+                    for i in range(2, 8):
+                        if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
+                        if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")] # country first
+                        if tmp[i] == 'N/A': tmp[i] = 'unknown'
                     writer.writerow(tmp)
         csv_file.close()
         # convert into csv file
 
     def correlations(self):
-        params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "BoxOffice"]
+        params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "Runtime", "BoxOffice"]
         df = pd.DataFrame(pd.read_csv(imdb_csv_path))
-        # df = pd.get_dummies(df)
-        # print(df.head(5))
-        # exit()
         year = np.array(list(map(float, df['Year']))).reshape(-1, 1)
         boxoffice = np.array(list(map(float, df['BoxOffice'])))
-        enc = preprocessing.OneHotEncoder()
-        # print(len(genre))
-        # exit()
-        # print(set(df['Genre']))
-        enc.fit(np.array(list(set(df['Genre']))).reshape(-1, 1))
-        genre = enc.transform(np.array(df['Genre']).reshape(-1, 1)).toarray()
         year_score = feature_selection.f_regression(year, boxoffice)
-        genre_score = feature_selection.f_regression(genre, boxoffice)
-        print("year score is: ", year_score)
-        print("genre score is: ", genre_score)
-        # print(df.describe(include='all'))
-        with open(imdb_csv_path, "r") as csvfile:
-            reader = csv.reader(csvfile)
-            year = [line[1] for line in reader]
-            boxoffice = [line[-1] for line in reader]
+        print(year_score)
+
+        def one_hot(string, boxoffice):
+            enc = preprocessing.OneHotEncoder(handle_unknown='ignore')
+            enc.fit(np.array(list(set(df[string]))).reshape(-1, 1))
+            try:
+                feature = enc.transform(np.array(df[string]).reshape(-1, 1)).toarray()
+            except ValueError:
+                print(string)
+                exit()
+            feature = np.array([''.join(re.findall(r'\d+', g)) for g in list(map(str, feature))]).reshape(-1, 1)
+            score = feature_selection.f_regression(feature, boxoffice)
+            return score
+
+        # cal_scores
+        score = dict()
+        for p in params[:-1]:
+            score[p] = one_hot(p, boxoffice)
+        print(score)
+        exit()
+
 
         # split the feature and label
 
@@ -205,13 +207,13 @@ class KnowledgeGraph():
                 self.rate_dict[meta['Rated']] = 1 
             else:
                 self.rate_dict[meta['Rated']] += 1 
-        print(self.year_dict)
-        print(self.genre_dict)
-        print(self.lang_dict)
-        print(self.country_dict)
-        print(self.rate_dict)
-        print(len(self.train_movieid_label.values()))
-        print(len(self.test_movieid_label.values()))
+        # print(self.year_dict)
+        # print(self.genre_dict)
+        # print(self.lang_dict)
+        # print(self.country_dict)
+        # print(self.rate_dict)
+        # print(len(self.train_movieid_label.values()))
+        # print(len(self.test_movieid_label.values()))
 
         # print(self.product_dict)
 
@@ -406,7 +408,33 @@ class Regression():
             # print(len(self.test_X))
             # print(len(self.train_X[19995]))
 
+    def pre_processing(self):
+        train_df = pd.DataFrame(pd.read_csv('./tables/omdb_train.csv', usecols=[1, 2, 6, 7, 8, 9]))
+        # print(train_df.Language.describe())
+        # print(train_df.Country.describe())
+        test_df = pd.DataFrame(pd.read_csv('./tables/omdb_test.csv', usecols=[1, 2, 6, 7, 8, 9]))
+        params = ["Genre", "Language", "Country"]
+        self.train_y = np.array(train_df["BoxOffice"])
+        self.test_y = np.array(test_df["BoxOffice"])
+        print(train_df["Year"])
+        exit()
+        # print(np.array(train_df["Year"]).shape)
+        self.train_X = np.c_[np.array(train_df["Year"]).reshape(-1, 1), np.array(list(map(float, train_df["Runtime"]))).reshape(-1, 1)]
+        print(self.train_X)
+        self.test_X = np.c_[np.array(test_df["Year"]), np.array(list(map(float, test_df["Runtime"]))).reshape(-1, 1)]
 
+        def one_hot(string):
+            enc = preprocessing.OneHotEncoder(handle_unknown='ignore')
+            enc.fit(np.array(list(set(train_df[string]))).reshape(-1, 1))
+            train = enc.transform(np.array(list(train_df[string])).reshape(-1, 1)).toarray()
+            test = enc.transform(np.array(test_df[string]).reshape(-1, 1)).toarray()
+            self.train_X = np.c_[self.train_X, train]
+            self.test_X = np.c_[self.test_X, test]
+            print(self.train_X.shape, self.test_X.shape)
+
+        for p in params:
+            one_hot(p)
+            # feature_train_dict[p] = test_one_hot(p, enc)
     # def avg_regression(self):
     #     credit_df = pd.DataFrame(pd.read_csv(credit_path))
     #     revenue_df = pd.DataFrame(pd.read_csv(movie_path))
@@ -450,10 +478,12 @@ class Regression():
         self.y_pre_train = lr.predict(self.train_X)
 
     def logistic_regression(self):
-        lor = LoR(C =1 )
+        lor = LoR(C=1)
+        print(self.train_X)
         lor.fit(self.train_X, self.train_y)
         self.y_pre_test = lor.predict(self.test_X)
         self.y_pre_train = lor.predict(self.train_X)
+        return self.y_pre_test, self.y_pre_train
 
     def svm_regression(self):
         c = [0.5,0.6,0.8,1.0,1.2,1.5,1.7,3]
@@ -598,31 +628,31 @@ class Regression():
 if __name__ == "__main__":
     KG = KnowledgeGraph()
     # KG.datacleaning_imdb()
-    KG.correlations()
-    exit()
-    KG.descrete_feature_plot()
-    exit()
-    KG.feature_analysis()
-    KG.feature_correalation_coefficient('Year')
+    # KG.correlations()
+    # KG.descrete_feature_plot()
+    # KG.feature_analysis()
+    # KG.feature_correalation_coefficient('Year')
     # KG.feature_correalation_coefficient('Metascore')
     # KG.feature_correalation_coefficient('imdbRating')
     # KG.feature_correalation_coefficient('Metascore')
-    exit()
-    KG.datacleaning()
-    KG.genre_director_actor_node()
-    KG.homo_node_normalization()
-    KG.homo_edge()
+    # exit()
+    # KG.datacleaning()
+    # KG.genre_director_actor_node()
+    # KG.homo_node_normalization()
+    # KG.homo_edge()
 
 
     Reg = Regression()
-    Reg.datacleaning()
-    Reg.train_test_split()
-    Reg.embedding_instance(KG.home_node_dict, KG.movie_chosen_dict, KG.actor_chosen_dict, KG.director_chosen_dict, KG.genre_node_dict)
+    Reg.pre_processing()
+    # Reg.datacleaning()
+    # Reg.train_test_split()
+    # Reg.embedding_instance(KG.home_node_dict, KG.movie_chosen_dict, KG.actor_chosen_dict, KG.director_chosen_dict, KG.genre_node_dict)
 
     with open('./result.txt', 'w') as f:
         print('Logisitic')
-        Reg.logistic_regression()
-        f.write(Reg.evaluation())
+        _, _ = Reg.logistic_regression()
+        print(Reg.evaluation())
+        exit()
 
         print('SVM')
         # for c in [0.5,0.6,0.8,1.0,1.2,1.5,1.7,3]:
