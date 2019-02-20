@@ -81,21 +81,23 @@ class KnowledgeGraph():
     
         # print(self.genre_chosen_list)   
         # print(len(self.movie_chosen_dict))# total 4505
+    
     def datacleaning_imdb(self):
+        # this is 
         csv_file = open('./tables/omdb.csv','w')
 
         with open(imdb_path, 'r') as f:
             for line in f:
                 line = line.strip().split('\t')
                 movie_id = line[0]
-                # movie_meta_list += (movie_id+'\t')
+                movie_meta_list += (movie_id+'\t')
                 movie_meta_dict =  ast.literal_eval(line[1])
                 if movie_meta_dict['Type'] == 'movie' and 2008 <= int(movie_meta_dict['Year']) <= 2019: # filer the movie out 
                     self.movie_meta_dict[movie_id] = movie_meta_dict
-        #             for k,v in movie_meta_dict.items():
-        #                 movie_meta_list += str(v)+'\t'
-        #         csv_file.write(movie_meta_list[:-1]+'\n')
-        # csv_file.close()          
+                    for k,v in movie_meta_dict.items():
+                        movie_meta_list += str(v)+'\t'
+                csv_file.write(movie_meta_list[:-1]+'\n')
+        csv_file.close()          
             # print(len(self.movie_meta_dict))
         # convet into csv file 
 
@@ -182,15 +184,6 @@ class KnowledgeGraph():
         # print(self.product_dict)
 
 
-    def feature_correalation_coefficient(self,feature_string):
-        x_list = []
-        y_list = []
-        for movie_id, box_office in self.train_movieid_label.items():
-            x_list.append(self.movie_meta_dict[movie_id][feature_string])
-            y_list.append(box_office)
-            # print(float(x_list),y_list)
-        plt.boxplot(x_list, y_list,'x')
-        plt.savefig('./figures/{}_budget.png'.format(feature_string))
 
         
 
