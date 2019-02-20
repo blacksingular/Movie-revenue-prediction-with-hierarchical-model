@@ -1,5 +1,8 @@
 from __future__ import print_function
 import imp
+
+import matplotlib.pyplot as plt
+
 # import matplotlib.pyplot as plt;
 # plt.rcdefaults()
 # from matplotlib.ticker import FuncFormatter
@@ -79,16 +82,24 @@ class KnowledgeGraph():
         # print(self.genre_chosen_list)   
         # print(len(self.movie_chosen_dict))# total 4505
     def datacleaning_imdb(self):
+        csv_file = open('./tables/omdb.csv','w')
+
         with open(imdb_path, 'r') as f:
             for line in f:
                 line = line.strip().split('\t')
                 movie_id = line[0]
+                # movie_meta_list += (movie_id+'\t')
                 movie_meta_dict =  ast.literal_eval(line[1])
                 if movie_meta_dict['Type'] == 'movie' and 2008 <= int(movie_meta_dict['Year']) <= 2019: # filer the movie out 
                     self.movie_meta_dict[movie_id] = movie_meta_dict
-               
+        #             for k,v in movie_meta_dict.items():
+        #                 movie_meta_list += str(v)+'\t'
+        #         csv_file.write(movie_meta_list[:-1]+'\n')
+        # csv_file.close()          
             # print(len(self.movie_meta_dict))
-        
+        # convet into csv file 
+
+
         # split the feature and label
 
     def feature_analysis(self):
@@ -167,8 +178,24 @@ class KnowledgeGraph():
         print(self.rate_dict)
         print(len(self.train_movieid_label.values()))
         print(len(self.test_movieid_label.values()))
-        
+
         # print(self.product_dict)
+
+
+    def feature_correalation_coefficient(self,feature_string):
+        x_list = []
+        y_list = []
+        for movie_id, box_office in self.train_movieid_label.items():
+            x_list.append(self.movie_meta_dict[movie_id][feature_string])
+            y_list.append(box_office)
+            # print(float(x_list),y_list)
+        plt.boxplot(x_list, y_list,'x')
+        plt.savefig('./figures/{}_budget.png'.format(feature_string))
+
+        
+
+
+
     def genre_director_actor_node(self):
         credit_df = pd.DataFrame(pd.read_csv(credit_path))
         actor_recount = 0
@@ -545,7 +572,13 @@ class Regression():
 if __name__ == "__main__":
     KG = KnowledgeGraph()
     KG.datacleaning_imdb()
+    KG.descrete_feature_plot()
+    exit()
     KG.feature_analysis()
+    KG.feature_correalation_coefficient('Year')
+    # KG.feature_correalation_coefficient('Metascore')
+    # KG.feature_correalation_coefficient('imdbRating')
+    # KG.feature_correalation_coefficient('Metascore')
     exit()
     KG.datacleaning()
     KG.genre_director_actor_node()
