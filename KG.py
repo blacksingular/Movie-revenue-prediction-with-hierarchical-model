@@ -14,7 +14,9 @@ import ast
 import csv
 import re
 import matplotlib
+from collections import defaultdict, Counter
 from sklearn.svm import SVR
+
 from sklearn import feature_selection
 from sklearn import preprocessing
 
@@ -88,26 +90,84 @@ class KnowledgeGraph():
     
     def datacleaning_imdb(self):
         params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "Runtime", "BoxOffice"]
-        csv_file = open('./tables/omdb.csv', 'w', newline='')
+        csv_file = open('./tables/omdb_full.csv', 'w', newline='')
+        train_csv_file = open('./tables/omdb_full_train.csv', 'w', newline='')
+        test_csv_file = open('./tables/omdb_full_test.csv', 'w', newline='')
+
         writer = csv.writer(csv_file)
+        train_writer = csv.writer(train_csv_file)
+        test_writer = csv.writer(test_csv_file)
         writer.writerow(params)
+        train_writer.writerow(params)
+        test_writer.writerow(params)
         with open(imdb_path, 'r') as f:
             for line in f:
                 tmp = []
                 movie_meta_dict = ast.literal_eval(line[line.find("\t") + 1:])
-                if movie_meta_dict['Type'] == 'movie' and 2008 <= int(movie_meta_dict['Year']) <= 2019: # filter the movie out
+                if movie_meta_dict['Type'] == 'movie' and 2008 <= int(movie_meta_dict['Year']) <= 2019 and movie_meta_dict['Runtime'] != "N/": # filter the movie out
                     for p in params:
                         tmp.append(movie_meta_dict.get(p, ""))
-                    tmp[-1] = ''.join(re.findall(r'\d+', tmp[-1]))
+                    tmp[-1] = ''.join(re.findall(r'\d+', tmp[-1])) # 
                     tmp[-2] = tmp[-2][:tmp[-2].find(" ")]
                     for i in range(2, 8):
-                        if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
-                        if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")] # country first
+                        # if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
+                        # if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")] # country first
                         if tmp[i] == 'N/A': tmp[i] = 'unknown'
+                    for i in [6,7]:
+                        if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(", ")]  
+                    for i in [2]:
+                        tmp[i] = tmp[i].split(", ")
+                    for i in [3]:
+                        tmp_list = [x.replace(r"'",'') for x in tmp[i].split(r", ")]
+                        tmp[i] = tmp_list[:1][0].replace('(co-director)', '')
+                    for i in [4]:
+                        tmp_list = [x.replace(r"'",'') for x in tmp[i].split(r", ")]
+                        tmp[i] = tmp_list[:1][0].split(' (')[0]
+                    for i in [5]:
+                        tmp_list = [x.replace(r"'",'') for x in tmp[i].split(r", ")]
+                        tmp[i] = tmp_list[:3]
                     writer.writerow(tmp)
+                    if 2008 <= int(movie_meta_dict['Year']) <= 2015:
+                        train_writer.writerow(tmp)
+                    else:
+                        test_writer.writerow(tmp)
+
         csv_file.close()
+        train_csv_file.close()
+        test_csv_file.close()
         # convert into csv file
 
+
+        # print(self.actor_director_writor_embed)
+        # ##########
+        # actor_list = list(all_df['Director'])
+        # for actor in actor_list:
+        #     # print(actor)
+        #     actor = [x.replace(r"'",'') for x in actor.split(r", ")]
+        #     for x in actor[:2]:
+        #         self.actor_embed[x] += 1
+        # actor_num = len(self.actor_embed.keys())
+        # print(actor_num)
+        # index = 0
+        # for actor in self.actor_embed.keys():
+        #     self.actor_embed[actor] = [0]* actor_num
+        #     self.actor_embed[actor][index] = 1
+        #     index += 1
+        # print(self.actor_embed)
+
+        # self.genre_embed_1 = defaultdict(lambda:0)
+        # for genre in genre_list:
+        #     genre = [x.replace(r"'",'') for x in genre.split(r", ")]
+        #     genre = genre[0]
+        #     # for x in genre:
+        #     self.genre_embed_1[genre] += 1
+        # print(self.genre_embed_1)
+            
+        # print(genre_embed)
+
+#         for word in ['red', 'blue', 'red', 'green', 'blue', 'blue']:
+# ...     cnt[word] += 1
+    
     def correlations(self):
         params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "Runtime", "BoxOffice"]
         df = pd.DataFrame(pd.read_csv(imdb_csv_path))
@@ -138,57 +198,48 @@ class KnowledgeGraph():
 
         # split the feature and label
 
-    def feature_analysis(self):
+    
+    #def feature_analysis(self):
         # feature_selection = ['Year', 'Rated','Runtime','Genre', 'Director', 'Writer','Actors','Language', 'Country','Ratings','imdbRating','imdbVotes','Type','BoxOffice','Production']
         # continues feature covariance
         # descrete feature distribution 
+        self.train_movieid_label = defaultdict(lambda:0)
+        self.test_movieid_label = defaultdict(lambda:0)
 
+        self.year_dict = defaultdict(lambda:0)
+        self.genre_dict = defaultdict(lambda:0)
+        self.lang_dict = defaultdict(lambda:0)
+        self.country_dict = defaultdict(lambda:0)
+        self.product_dict = defaultdict(lambda:0)
+        self.rate_dict = defaultdict(lambda:0)
+        self.actors = defaultdict(lambda:0)
         # first split feature and label
-        
-        self.train_movieid_label = dict()
-        self.test_movieid_label = dict()
-
-        self.year_dict = dict()
-        self.genre_dict = dict()
-        self.lang_dict = dict()
-        self.country_dict = dict()
-        self.product_dict = dict()
-        self.rate_dict = dict()
-        for movie, meta in self.movie_meta_dict.items():
+        # ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "Runtime", "BoxOffice"]
+        csv_file = open('./tables/omdb.csv', 'r')
+        for line in csv_file:
+            line = line.strip().split(',')
             # split train test and feature, and label 
-            if int(meta['Year']) <= 2015:
-                self.train_movieid_label[movie] = float(meta['BoxOffice'].split('$')[1].replace(',',''))
-            else:
-                self.test_movieid_label[movie] = float(meta['BoxOffice'].split('$')[1].replace(',',''))
+            if int(line[1]) <= 2015:
+                self.train_movieid_label[movie] += float(meta['BoxOffice'].split('$')[1].replace(',',''))
 
             # year_distribution
-            if meta['Year'] not in self.year_dict:
-                self.year_dict[meta['Year']] = 1 
-            else:
-                self.year_dict[meta['Year']] += 1 
-
+            self.year_dict[meta['Year']] += 1 
+            
             # genre distribution 
             genre_list = meta['Genre'].split(', ')
             for genre in genre_list:
-                if genre not in self.genre_dict:
-                    self.genre_dict[genre] = 1
-                else:
-                    self.genre_dict[genre] += 1
-            
+                self.genre_dict[genre] += 1
+
             # lang_dict = dict()
             lang_list = meta['Language'].split(', ')
             for lang in lang_list:
-                if lang not in self.lang_dict:
-                    self.lang_dict[lang] = 1
-                else:
-                    self.lang_dict[lang] += 1
+                self.lang_dict[lang] += 1
+              
             # country_dict 
             country_dict = meta['Country'].split(', ')
             for count in country_dict:
-                if count not in self.country_dict:
-                    self.country_dict[count] = 1 
-                else:
-                    self.country_dict[count] += 1 
+                self.country_dict[count] += 1 
+                
             
             # produce_dict 
             product_dict = meta['Production'].split('/')
@@ -197,23 +248,19 @@ class KnowledgeGraph():
                     prod = prod[1:]
                 if prod[-1]==' ':
                     prod = prod[:-2]
-                if prod not in self.product_dict:
-                    self.product_dict[prod] = 1 
-                else:
-                    self.product_dict[prod] += 1 
+                self.product_dict[prod] += 1 
 
             # rate_dict  
-            if meta['Rated'] not in self.rate_dict:
-                self.rate_dict[meta['Rated']] = 1 
-            else:
-                self.rate_dict[meta['Rated']] += 1 
-        # print(self.year_dict)
-        # print(self.genre_dict)
-        # print(self.lang_dict)
-        # print(self.country_dict)
-        # print(self.rate_dict)
-        # print(len(self.train_movieid_label.values()))
-        # print(len(self.test_movieid_label.values()))
+            self.rate_dict[meta['Rated']] += 1 
+
+            
+        print(self.year_dict)
+        print(self.genre_dict)
+        print(self.lang_dict)
+        print(self.country_dict)
+        print(self.rate_dict)
+        print(len(self.train_movieid_label.values()))
+        print(len(self.test_movieid_label.values()))
 
         # print(self.product_dict)
 
@@ -316,6 +363,11 @@ class Regression():
         self.test_y = dict()
         self.homo_node_embedding = dict()
         self.md_relation_tr = dict()
+
+        self.actor_director_writor_embed = defaultdict(lambda:0)
+        self.director_embed = defaultdict(lambda:0)
+        self.writor_embed = defaultdict(lambda:0)
+        self.genre_embed = defaultdict(lambda:0)
     def datacleaning(self):
         # only get en, from 2005 - 2016, have budge above 10000, have box office above 10000
 
@@ -403,72 +455,185 @@ class Regression():
             # print(len(self.train_X[19995]))
 
     def pre_processing(self):
-        train_df = pd.DataFrame(pd.read_csv('./tables/omdb_train.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
+        train_df = pd.DataFrame(pd.read_csv('./tables/omdb_full_train.csv', usecols=[1, 2,3,4,5, 6, 7, 8, 9]))
         # print(train_df.Language.describe())
         # print(train_df.Country.describe())
-        test_df = pd.DataFrame(pd.read_csv('./tables/omdb_test.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
-        params = ["Genre", "Language", "Country",'Actors','Director','Writer']
+        test_df = pd.DataFrame(pd.read_csv('./tables/omdb_full_test.csv', usecols=[1, 2,3,4,5, 6, 7, 8, 9]))
+        params = ["Language", "Country"]
+
 
         self.train_y = np.array(train_df["BoxOffice"])
         self.test_y = np.array(test_df["BoxOffice"])
         
+        
         # print(np.array(train_df["Year"]).shape)
-        self.train_X = np.c_[np.array(train_df["Year"]).reshape(-1, 1), np.array(list(map(float, train_df["Runtime"]))).reshape(-1, 1)]
-        print(self.train_X)
-        self.test_X = np.c_[np.array(test_df["Year"]), np.array(list(map(float, test_df["Runtime"]))).reshape(-1, 1)]
+        
 
+        
+        # self.train_X = np.c_[np.array(train_df["Year"]).reshape(-1, 1), np.array(list(map(float, train_df["Runtime"]))).reshape(-1, 1)]
+        # # print(self.train_X)
+       
+        # self.test_X = np.c_[np.array(test_df["Year"]), np.array(list(map(float, test_df["Runtime"]))).reshape(-1, 1)]
+        # print(.append(train_df["Runtime"][0]))
+        self.train_X = []
+        self.test_X = []
+        for i in range(len(train_df["Year"])):
+            self.train_X.append([train_df["Year"][i]])
+        for i in range(len(self.train_X )):
+            self.train_X[i].append(float(train_df["Runtime"][i]))
+        for i in range(len(test_df["Year"])):
+            self.test_X.append([test_df["Year"][i]])
+        for i in range(len(self.test_X )):
+            self.test_X[i].append(float(test_df["Runtime"][i]))
+    
         def one_hot(string):
             enc = preprocessing.OneHotEncoder(handle_unknown='ignore')
             enc.fit(np.array(list(set(train_df[string]))).reshape(-1, 1))
             train = enc.transform(np.array(list(train_df[string])).reshape(-1, 1)).toarray()
             test = enc.transform(np.array(test_df[string]).reshape(-1, 1)).toarray()
-            self.train_X = np.c_[self.train_X, train]
-            self.test_X = np.c_[self.test_X, test]
-            print(self.train_X.shape, self.test_X.shape)
+            
+            for i in range(len(self.train_X)):
+                self.train_X[i].extend((list(train[i,:])))
+            for i in range(len(self.test_X)):
+                self.test_X[i].extend((list(test[i,:])))
+            # self.train_X = np.c_[self.train_X, train]
+            # self.test_X = np.c_[self.test_X, test]
+        def One_hot_embedding():
+            # self.lang_embed - defaultdict(lambda:0)
+            all_df = pd.DataFrame(pd.read_csv('./tables/omdb_full.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
+            genre_list = list(all_df['Genre'])
+            for genre in genre_list:
+                genre = ast.literal_eval(genre)
+                for x in genre:
+                    self.genre_embed[x] += 1
+            genre_num = len(self.genre_embed.keys())
+
+            index = 0
+            for genre in self.genre_embed.keys():
+                self.genre_embed[genre] = [0]* genre_num
+                self.genre_embed[genre][index] = 1
+                index += 1
+            # print(self.actor_embed)
+            """actor"""
+            actor_list = list(all_df['Actors'])
+            for actor in actor_list:
+                actor= ast.literal_eval(actor)
+                for x in actor[:3]:
+                    self.actor_director_writor_embed[x] += 1
+            actor_num = len(self.actor_director_writor_embed.keys())
+            print('num of actor: ', len(self.actor_director_writor_embed))
+            # exit()
+
+
+            """director"""
+            director_list= list(all_df['Director'])
+            # print(len(director_
+            for director in director_list:
+                self.director_embed[director.replace('(co-director)', '')] += 1
+                self.actor_director_writor_embed[director.replace('(co-director)', '')] += 1
+            print('num of director ', len(self.director_embed))
+            # print(len(self.actor_director_writor_embed))
+            
+            """writer"""
+            writer_list = list(all_df['Writer'])
+            # print(len(writer_list))
+            for writer in writer_list:
+                self.writor_embed[writer.split(' (')[0]] += 1
+                self.actor_director_writor_embed[writer.split(' (')[0]] += 1
+            # print(self.writor_embed)
+            print('num of writor : ',len(self.writor_embed))
+            print('total num of human: ',len(self.actor_director_writor_embed))
+
+            index = 0
+            for man in self.actor_director_writor_embed.keys():
+                self.actor_director_writor_embed[man] = [0]* len(self.actor_director_writor_embed)
+                self.actor_director_writor_embed[man][index] = 1
+                index += 1
         
         for p in params:
             one_hot(p)
 
-            # feature_train_dict[p] = test_one_hot(p, enc)
-    # def avg_regression(self):
-    #     credit_df = pd.DataFrame(pd.read_csv(credit_path))
-    #     revenue_df = pd.DataFrame(pd.read_csv(movie_path))
-    #     # user_df = pd.DataFrame(pd.read_csv(user_rating_path, low_memory=False))
-    #     for row in credit_df[['cast', 'crew', 'id']].iterrows():
-    #         movie_id = row[1]['id']
-    #         if str(movie_id) in self.chosen_train_dict:
-    #             for dic in ast.literal_eval(row[1]['crew']):
-    #                 if dic['job'] == 'Director':
-    #                     if dic['id'] in self.md_relation_tr:
-    #                         self.md_relation_tr[dic['id']].append(movie_id)
-    #                     else:
-    #                         self.md_relation_tr[dic['id']] = [movie_id]
-    #         if str(movie_id) in self.chosen_test_dict:
-    #             for dic in ast.literal_eval(row[1]['crew']):
-    #                 if dic['job'] == 'Director':
-    #                     if dic['id'] in self.md_relation_te:
-    #                         self.md_relation_te[dic['id']].append(movie_id)
-    #                     else:
-    #                         self.md_relation_te[dic['id']] = [movie_id]
-    #     for row in revenue_df[['revenue', 'id']].iterrows():
-    #         movie_id = row[1]['id']
-    #         if str(movie_id) in self.chosen_train_dict or str(movie_id) in self.chosen_test_dict:
-    #             self.mf_relation[movie_id] = int(row[1]['revenue'])
-    #     movies = 0
 
-    #     for (k, v) in self.md_relation_tr.items():
-    #         total = 0
-    #         flag = 0
-    #         for id in v:
-    #             if str(id) in self.mf_relation:
-    #                 total += int(self.mf_relation[str(id)])
-    #                 flag += 1
-    #         self.revenues[k] = total / flag
-    #     my_list = sorted(self.revenues.items(), key=lambda x: x[1])
-    #     self.mean = sum(list(zip(*my_list))[1]) / len(my_list)
+        One_hot_embedding()
+        # print(self.actor_director_writor_embed.keys())
+        """Genre """
+        for i in range(len(train_df["Genre"])):
+            genre_list = [x for x in ast.literal_eval(train_df["Genre"][i])]
+            genre_vec = [0] * len(self.genre_embed[genre_list[0]])
+            for genre in genre_list:
+                genre_vec = [self.genre_embed[genre][j] + genre_vec[j] for j in range(len(genre_vec))]
+            self.train_X[i].extend([float(x) for x in genre_vec])
+
+            # train_df["Genre"][i] = genre_vec
+        for i in range(len(test_df["Genre"])):
+            genre_list = [x for x in ast.literal_eval(test_df["Genre"][i])]
+            genre_vec = [0] * len(self.genre_embed[genre_list[0]])
+            for genre in genre_list:
+                genre_vec = [self.genre_embed[genre][j] + genre_vec[j] for j in range(len(genre_vec))]
+            self.test_X[i].extend([float(x) for x in genre_vec])
+        
+
+        
+        """man"""
+        for i in range(len(train_df["Director"])):
+            director = train_df["Director"][i]
+            vec = list(self.actor_director_writor_embed[director])
+            self.train_X[i].extend(vec)
+            # .extend([float(x) for x in self.actor_director_writor_embed[director]])
+        for i in range(len(test_df["Director"])):
+            director = test_df["Director"][i]
+            self.test_X[i].extend(list(self.actor_director_writor_embed[director]))
+        for i in range(len(train_df["Writer"])):
+            Writor = train_df["Writer"][i]
+            self.train_X[i].extend((self.actor_director_writor_embed[Writor]))
+        for i in range(len(test_df["Writer"])):
+            Writor = test_df["Writer"][i]
+            self.test_X[i].extend((self.actor_director_writor_embed[Writor]))
+        
+        # print(self.actor_director_writor_embed.keys())
+        # exit()
+        for i in range(len(test_df["Actors"])):
+            # print(test_df["Actors"])
+            actor_list = [x for x in ast.literal_eval(test_df["Actors"][i])]
+            # print(self.actor_director_writor_embed[actor_list[0]])
+            actor_vec = [0] * len(self.actor_director_writor_embed[actor_list[0]])
+            for actor in actor_list:
+                actor_vec = [self.actor_director_writor_embed[actor][j] + actor_vec[j] for j in range(len(actor_vec))]
+            self.test_X[i].extend((actor_vec))
+        for i in range(len(train_df["Actors"])):
+            # print(test_df["Actors"])
+            actor_list = [x for x in ast.literal_eval(train_df["Actors"][i])]
+            # print(self.actor_director_writor_embed[actor_list[0]])
+            actor_vec = [0] * len(self.actor_director_writor_embed[actor_list[0]])
+            for actor in actor_list:
+                actor_vec = [self.actor_director_writor_embed[actor][j] + actor_vec[j] for j in range(len(actor_vec))]
+            self.train_X[i].extend((actor_vec))
+        # print(len(self.train_X[0]))
+        # print(np.array(self.train_X).shape)
+        # enc = preprocessing.OneHotEncoder(handle_unknown='ignore')
+        # x = enc.fit_transform(np.array(self.train_X))
+        # print(x)
+
+        # print(self.test_X[0])
+        #     train_df["Genre"][i] = genre_vec
+        # for i in range(len(test_df["Genre"])):
+        #     genre_list = [x for x in ast.literal_eval(test_df["Genre"][i])]
+        #     genre_vec = [0] * len(self.genre_embed[genre_list[0]])
+        #     for genre in genre_list:
+        #         genre_vec = [self.genre_embed[genre][j] + genre_vec[j] for j in range(len(genre_vec))]
+        #     test_df["Genre"][i] = genre_vec
+
+        # self.train_X = np.c_[self.train_X, np.array(train_df["Genre"])]
+        # self.test_X = np.c_[self.test_X, np.array(test_df["Genre"])]
+        
+        # self.train_X = np.c_[self.train_X, train]
+        #     self.test_X = np.c_[self.test_X, test]
+        
+
     def line_regression(self):
         lr = LR()
         lr.fit(self.train_X, self.train_y)
+        
         self.y_pre_test = lr.predict(self.test_X)
         self.y_pre_train = lr.predict(self.train_X)
 
@@ -543,23 +708,7 @@ class Regression():
         # print('Test :', score_test)
 
     def MLP_sklearn(self):
-#         mlpr = MLP(hidden_layer_sizes=(200,100,10), ## 隐藏层的神经元个数
-#                     activation='tanh', 
-#                     solver='adam', 
-#                     alpha=0.001,   ## L2惩罚参数
-#                     max_iter=5200, 
-#                     random_state=123,
-#                     learning_rate_init= 0.01
-#                     # early_stopping=True, ## 是否提前停止训练
-#                     # validation_fraction=0.1, ## 20%作为验证集
-# #                     tol=1e-8,
-#                    )
-#         mlpr.fit(self.train_X, self.train_y)
-#         plt.figure()
-#         plt.plot(mlpr.loss_curve_)
-#         plt.show()
-#         self.y_pre_train = mlpr.predict(self.train_X)
-#         self.y_pre_test = mlpr.predict(self.test_X)
+
         self.train_X = np.array(self.train_X)
         self.train_y = np.array(self.train_y)
         self.test_X = np.array(self.test_X)
@@ -623,9 +772,12 @@ class Regression():
 if __name__ == "__main__":
     KG = KnowledgeGraph()
     # KG.datacleaning_imdb()
+    
+    # exit()
     # KG.correlations()
     # KG.descrete_feature_plot()
     # KG.feature_analysis()
+    # exit()
     # KG.feature_correalation_coefficient('Year')
     # KG.feature_correalation_coefficient('Metascore')
     # KG.feature_correalation_coefficient('imdbRating')
@@ -638,15 +790,25 @@ if __name__ == "__main__":
 
 
     Reg = Regression()
+
     Reg.pre_processing()
+    # exit()
     # Reg.datacleaning()
     # Reg.train_test_split()
     # Reg.embedding_instance(KG.home_node_dict, KG.movie_chosen_dict, KG.actor_chosen_dict, KG.director_chosen_dict, KG.genre_node_dict)
 
     with open('./result.txt', 'w') as f:
+
+        print('Linear')
+        Reg.line_regression()
+        f.write(Reg.evaluation())
+        
+
+
         print('Logisitic')
         _, _ = Reg.logistic_regression()
         f.write(Reg.evaluation())
+
         
 
         print('SVM')
@@ -657,17 +819,16 @@ if __name__ == "__main__":
         # print('SGD')
         # Reg.SGD_regression()
         # Reg.evaluation()
-        print('Linear')
-        Reg.line_regression()
+        
+        print('GBR')
+        Reg.GradientBoosting_regression()
         f.write(Reg.evaluation())
         
         print('RFR')
         Reg.RandomForest_regression()
         f.write(Reg.evaluation())
 
-        print('GBR')
-        Reg.GradientBoosting_regression()
-        f.write(Reg.evaluation())
+        
 
 
     # Reg.MLP_ours()
