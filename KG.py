@@ -682,8 +682,8 @@ class Regression():
         self.y_pre_test = lr.predict(self.test_X)
         self.y_pre_train = lr.predict(self.train_X)
 
-    def logistic_regression(self,c):
-        lor = LoR(C=c)
+    def logistic_regression(self,c,solve):
+        lor = LoR(C=c,solver=solve, n_jobs=-1)
         # print(self.train_X)
         lor.fit(self.train_X, self.train_y)
         self.y_pre_test = lor.predict(self.test_X)
@@ -856,11 +856,11 @@ if __name__ == "__main__":
 
 
         print('Logisitic')
-        for c in [1.5,2,3,4,5,6,10]:
-            Reg.logistic_regression(c)
-            f.write(Reg.evaluation())
+        for solve in ['newton-cg','lbfgs','sag','saga']:
+            for c in [6,7.5]:
+                Reg.logistic_regression(c,solve)
+                f.write(Reg.evaluation())
 
-        exit()
         
 
         print('SVM')
