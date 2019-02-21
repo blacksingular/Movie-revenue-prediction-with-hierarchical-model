@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 # import matplotlib.pyplot as plt;
 # plt.rcdefaults()
 # from matplotlib.ticker import FuncFormatter
-
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 import numpy as np
 import pdb
 import pandas as pd
@@ -16,6 +17,7 @@ import re
 import matplotlib
 from collections import defaultdict, Counter
 from sklearn.svm import SVR
+from sklearn.decomposition import PCA
 
 from sklearn import feature_selection
 from sklearn import preprocessing
@@ -37,7 +39,7 @@ from utils import *
 # from keras.optimizers import Adam
 # from keras import metrics
 # from numpy import loadtxt
-# from xgboost import XGBClassifier
+from xgboost import XGBRegressor
 # import keras as K
 # from keras.models import Sequential
 # from keras.layers import Dense,Dropout,Activation
@@ -112,7 +114,10 @@ class KnowledgeGraph():
                     for i in range(2, 8):
                         # if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
                         # if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")] # country first
-                        if tmp[i] == 'N/A': tmp[i] = 'unknown'
+                        if tmp[i] == 'N/A': 
+                            tmp[i] = 'unknown' 
+                            continue
+
                     for i in [6,7]:
                         if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(", ")]  
                     for i in [2]:
@@ -224,12 +229,10 @@ class KnowledgeGraph():
 
             # year_distribution
             self.year_dict[meta['Year']] += 1 
-            
             # genre distribution 
             genre_list = meta['Genre'].split(', ')
             for genre in genre_list:
                 self.genre_dict[genre] += 1
-
             # lang_dict = dict()
             lang_list = meta['Language'].split(', ')
             for lang in lang_list:
@@ -239,8 +242,6 @@ class KnowledgeGraph():
             country_dict = meta['Country'].split(', ')
             for count in country_dict:
                 self.country_dict[count] += 1 
-                
-            
             # produce_dict 
             product_dict = meta['Production'].split('/')
             for prod in product_dict:
@@ -261,7 +262,7 @@ class KnowledgeGraph():
         print(self.rate_dict)
         print(len(self.train_movieid_label.values()))
         print(len(self.test_movieid_label.values()))
-
+        
         # print(self.product_dict)
 
     def genre_director_actor_node(self):
@@ -365,6 +366,7 @@ class Regression():
         self.md_relation_tr = dict()
 
         self.actor_director_writor_embed = defaultdict(lambda:0)
+        self.actor_embed = defaultdict(lambda:0)
         self.director_embed = defaultdict(lambda:0)
         self.writor_embed = defaultdict(lambda:0)
         self.genre_embed = defaultdict(lambda:0)
@@ -501,7 +503,10 @@ class Regression():
         def One_hot_embedding():
             # self.lang_embed - defaultdict(lambda:0)
             all_df = pd.DataFrame(pd.read_csv('./tables/omdb_full.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
-            genre_list = list(all_df['Genre'])
+            all_df_train = pd.DataFrame(pd.read_csv('./tables/omdb_full_train.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
+            all_df_test = pd.DataFrame(pd.read_csv('./tables/omdb_full_test.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
+
+            genre_list = list(all_df_train['Genre'])
             for genre in genre_list:
                 genre = ast.literal_eval(genre)
                 for x in genre:
@@ -515,18 +520,20 @@ class Regression():
                 index += 1
             # print(self.actor_embed)
             """actor"""
-            actor_list = list(all_df['Actors'])
+            actor_list = list(all_df_train['Actors'])
             for actor in actor_list:
                 actor= ast.literal_eval(actor)
                 for x in actor[:3]:
                     self.actor_director_writor_embed[x] += 1
+                    self.actor_embed[x] += 1 
             actor_num = len(self.actor_director_writor_embed.keys())
             print('num of actor: ', len(self.actor_director_writor_embed))
             # exit()
-
+            # c = Counter(self.actor_director_writor_embed).most_common(20)
+            
 
             """director"""
-            director_list= list(all_df['Director'])
+            director_list= list(all_df_train['Director'])
             # print(len(director_
             for director in director_list:
                 self.director_embed[director.replace('(co-director)', '')] += 1
@@ -535,7 +542,7 @@ class Regression():
             # print(len(self.actor_director_writor_embed))
             
             """writer"""
-            writer_list = list(all_df['Writer'])
+            writer_list = list(all_df_train['Writer'])
             # print(len(writer_list))
             for writer in writer_list:
                 self.writor_embed[writer.split(' (')[0]] += 1
@@ -555,6 +562,9 @@ class Regression():
 
 
         One_hot_embedding()
+        self.actor_embed['unknown'] = 0
+        self.director_embed['unknown'] = 0
+        self.writor_embed['unknown'] = 0
         # print(self.actor_director_writor_embed.keys())
         """Genre """
         for i in range(len(train_df["Genre"])):
@@ -577,18 +587,29 @@ class Regression():
         """man"""
         for i in range(len(train_df["Director"])):
             director = train_df["Director"][i]
-            vec = list(self.actor_director_writor_embed[director])
-            self.train_X[i].extend(vec)
+            # vec = list(self.actor_director_writor_embed[director])
+            # self.train_X[i].extend(vec)
+            
+            director_socre = self.director_embed[director]
+            # print(director_socre)
+            # exit()
+            self.train_X[i].append(director_socre)
             # .extend([float(x) for x in self.actor_director_writor_embed[director]])
         for i in range(len(test_df["Director"])):
             director = test_df["Director"][i]
-            self.test_X[i].extend(list(self.actor_director_writor_embed[director]))
+            director_socre = self.director_embed[director]
+            self.test_X[i].append(director_socre)
+            # self.test_X[i].extend(list(self.actor_director_writor_embed[director]))
         for i in range(len(train_df["Writer"])):
             Writor = train_df["Writer"][i]
-            self.train_X[i].extend((self.actor_director_writor_embed[Writor]))
+            writer_socre = self.writor_embed[director]
+            self.train_X[i].append(writer_socre)
+            # self.train_X[i].extend((self.actor_director_writor_embed[Writor]))
         for i in range(len(test_df["Writer"])):
             Writor = test_df["Writer"][i]
-            self.test_X[i].extend((self.actor_director_writor_embed[Writor]))
+            writer_socre = self.writor_embed[director]
+            self.test_X[i].append(writer_socre)
+            # self.test_X[i].extend((self.actor_director_writor_embed[Writor]))
         
         # print(self.actor_director_writor_embed.keys())
         # exit()
@@ -596,20 +617,37 @@ class Regression():
             # print(test_df["Actors"])
             actor_list = [x for x in ast.literal_eval(test_df["Actors"][i])]
             # print(self.actor_director_writor_embed[actor_list[0]])
-            actor_vec = [0] * len(self.actor_director_writor_embed[actor_list[0]])
+            # actor_credict = []
+            # actor_vec = [0] * len(self.actor_director_writor_embed[actor_list[0]])
+            actor_vec = [0] * 3  
+            index= 0
             for actor in actor_list:
-                actor_vec = [self.actor_director_writor_embed[actor][j] + actor_vec[j] for j in range(len(actor_vec))]
+                actor_vec[index] = self.actor_embed[actor]
+                index+=1
+                # actor_vec = [self.actor_director_writor_embed[actor][j] + actor_vec[j] for j in range(len(actor_vec))]
             self.test_X[i].extend((actor_vec))
+
         for i in range(len(train_df["Actors"])):
             # print(test_df["Actors"])
             actor_list = [x for x in ast.literal_eval(train_df["Actors"][i])]
             # print(self.actor_director_writor_embed[actor_list[0]])
-            actor_vec = [0] * len(self.actor_director_writor_embed[actor_list[0]])
+            # actor_vec = [0] * len(self.actor_director_writor_embed[actor_list[0]])
+            # for actor in actor_list:
+            #     actor_vec = [self.actor_director_writor_embed[actor][j] + actor_vec[j] for j in range(len(actor_vec))]
+            # self.train_X[i].extend((actor_vec))
+            actor_vec = [0] * 3  
+            index= 0
             for actor in actor_list:
-                actor_vec = [self.actor_director_writor_embed[actor][j] + actor_vec[j] for j in range(len(actor_vec))]
+                actor_vec[index] = self.actor_embed[actor]
+                index+=1
+                # actor_vec = [self.actor_director_writor_embed[actor][j] + actor_vec[j] for j in range(len(actor_vec))]
             self.train_X[i].extend((actor_vec))
+
+       
         # print(len(self.train_X[0]))
         # print(np.array(self.train_X).shape)
+        # print(np.array(self.test_X).shape)
+        # exit()
         # enc = preprocessing.OneHotEncoder(handle_unknown='ignore')
         # x = enc.fit_transform(np.array(self.train_X))
         # print(x)
@@ -630,15 +668,22 @@ class Regression():
         #     self.test_X = np.c_[self.test_X, test]
         
 
+    def pca_reduction(self):
+        pca = PCA(n_components= 20)
+        pca.fit(self.train_X)
+        print(pca.explained_variance_ratio_)  
+
     def line_regression(self):
         lr = LR()
         lr.fit(self.train_X, self.train_y)
-        
+        # importance = lr.feature_importances_
+        # print(importance)
+        # exit()
         self.y_pre_test = lr.predict(self.test_X)
         self.y_pre_train = lr.predict(self.train_X)
 
-    def logistic_regression(self):
-        lor = LoR(C=1)
+    def logistic_regression(self,c):
+        lor = LoR(C=c)
         # print(self.train_X)
         lor.fit(self.train_X, self.train_y)
         self.y_pre_test = lor.predict(self.test_X)
@@ -675,7 +720,11 @@ class Regression():
         self.y_pre_train = gbr.predict(self.train_X)
         self.y_pre_test = gbr.predict(self.test_X)
 
-
+    def XGBoosting_regression(self):
+        xgb = XGBRegressor()
+        xgb.fit(self.train_X, self.train_y)
+        self.y_pre_train = xgb.predict(self.train_X)
+        self.y_pre_test = xgb.predict(self.test_X)
 
     def MLP_ours(self):
         batch_size = 128
@@ -791,6 +840,8 @@ if __name__ == "__main__":
 
     Reg = Regression()
     Reg.pre_processing()
+    Reg.pca_reduction()
+    # exit()
     # exit()
     # Reg.datacleaning()
     # Reg.train_test_split()
@@ -805,9 +856,11 @@ if __name__ == "__main__":
 
 
         print('Logisitic')
-        Reg.logistic_regression()
-        f.write(Reg.evaluation())
+        for c in [1.5,2,3,4,5,6,10]:
+            Reg.logistic_regression(c)
+            f.write(Reg.evaluation())
 
+        exit()
         
 
         print('SVM')
@@ -827,8 +880,10 @@ if __name__ == "__main__":
         Reg.RandomForest_regression()
         f.write(Reg.evaluation())
 
+        print('XGB')
+        Reg.XGBoosting_regression()
+        f.write(Reg.evaluation())
         
-
 
     # Reg.MLP_ours()
     # print('MLP_ours')
