@@ -639,11 +639,11 @@ class Regression():
 
     def logistic_regression(self):
         lor = LoR(C=1)
-        print(self.train_X)
+        # print(self.train_X)
         lor.fit(self.train_X, self.train_y)
         self.y_pre_test = lor.predict(self.test_X)
         self.y_pre_train = lor.predict(self.train_X)
-        return self.y_pre_test, self.y_pre_train
+        # return self.y_pre_test, self.y_pre_train
 
     def svm_regression(self):
         c = [0.5,0.6,0.8,1.0,1.2,1.5,1.7,3]
@@ -790,7 +790,6 @@ if __name__ == "__main__":
 
 
     Reg = Regression()
-
     Reg.pre_processing()
     # exit()
     # Reg.datacleaning()
@@ -806,7 +805,7 @@ if __name__ == "__main__":
 
 
         print('Logisitic')
-        _, _ = Reg.logistic_regression()
+        Reg.logistic_regression()
         f.write(Reg.evaluation())
 
         
@@ -823,7 +822,7 @@ if __name__ == "__main__":
         print('GBR')
         Reg.GradientBoosting_regression()
         f.write(Reg.evaluation())
-        
+
         print('RFR')
         Reg.RandomForest_regression()
         f.write(Reg.evaluation())
