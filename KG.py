@@ -682,8 +682,8 @@ class Regression():
         self.y_pre_test = lr.predict(self.test_X)
         self.y_pre_train = lr.predict(self.train_X)
 
-    def logistic_regression(self,c,solve):
-        lor = LoR(C=c,solver=solve, n_jobs=-1)
+    def logistic_regression(self,c):
+        lor = LoR(C=c)
         # print(self.train_X)
         lor.fit(self.train_X, self.train_y)
         self.y_pre_test = lor.predict(self.test_X)
@@ -712,8 +712,8 @@ class Regression():
         self.y_pre_test = rfr.predict(self.test_X)
         # print(path)
 
-    def GradientBoosting_regression(self):
-        params = {'n_estimators': 1000, 'max_depth': 4, 'min_samples_split': 2,
+    def GradientBoosting_regression(self,n,step):
+        params = {'n_estimators': n, 'max_depth': step, 'min_samples_split': 2,
           'learning_rate': 0.01, 'loss': 'lad'}
         gbr = GBR(**params)
         gbr.fit(self.train_X, self.train_y)
@@ -854,31 +854,32 @@ if __name__ == "__main__":
         f.write(Reg.evaluation())
         
 
-
-        print('Logisitic')
-        for solve in ['newton-cg','lbfgs','sag','saga']:
-            for c in [6,7.5]:
-                Reg.logistic_regression(c,solve)
-                f.write(Reg.evaluation())
-
         
+        # print('Logisitic')
+        # for c in [1]:
+        #     Reg.logistic_regression(c)
+        #     f.write(Reg.evaluation())
 
-        print('SVM')
-        # for c in [0.5,0.6,0.8,1.0,1.2,1.5,1.7,3]:
-        Reg.svm_regression()
-        f.write(Reg.evaluation())
+        # print('GBR')
+        # for n in [800]:
+        #     for s in [25,30]:
+        #         Reg.GradientBoosting_regression(n,s)
+        #         f.write(Reg.evaluation())
+        # exit()
+        # print('SVM')
+        # # for c in [0.5,0.6,0.8,1.0,1.2,1.5,1.7,3]:
+        # Reg.svm_regression()
+        # f.write(Reg.evaluation())
 
         # print('SGD')
         # Reg.SGD_regression()
         # Reg.evaluation()
         
-        print('GBR')
-        Reg.GradientBoosting_regression()
-        f.write(Reg.evaluation())
+        
 
-        print('RFR')
-        Reg.RandomForest_regression()
-        f.write(Reg.evaluation())
+        # print('RFR')
+        # Reg.RandomForest_regression()
+        # f.write(Reg.evaluation())
 
         print('XGB')
         Reg.XGBoosting_regression()
