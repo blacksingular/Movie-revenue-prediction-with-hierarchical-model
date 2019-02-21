@@ -474,7 +474,6 @@ class Regression():
         
         # self.train_X = np.c_[np.array(train_df["Year"]).reshape(-1, 1), np.array(list(map(float, train_df["Runtime"]))).reshape(-1, 1)]
         # # print(self.train_X)
-       
         # self.test_X = np.c_[np.array(test_df["Year"]), np.array(list(map(float, test_df["Runtime"]))).reshape(-1, 1)]
         # print(.append(train_df["Runtime"][0]))
         self.train_X = []
@@ -786,7 +785,6 @@ class Regression():
         plt.ylabel("loss")
         plt.show()
     
-
     def evaluation(self):
         error_smape_train = 0
         error_mae_train = 0
@@ -877,9 +875,9 @@ if __name__ == "__main__":
         
         
 
-        # print('RFR')
-        # Reg.RandomForest_regression()
-        # f.write(Reg.evaluation())
+        print('RFR')
+        Reg.RandomForest_regression()
+        f.write(Reg.evaluation())
 
         print('XGB')
         Reg.XGBoosting_regression()

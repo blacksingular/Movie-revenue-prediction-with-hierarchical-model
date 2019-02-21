@@ -206,7 +206,7 @@ def omdb_request():
     page = "http://www.omdbapi.com/?i="
     #file_path = ('./tables/movie_id.txt')
     file_path = ('./tables/movie_id_2000to2007and2019.txt')
-#    out_file_path = ('./tables/movie_info.txt')
+    #out_file_path = ('./tables/movie_info.txt')
     out_file_path = ('./tables/movie_info_2.txt')
     assert os.path.exists(file_path) == True
     with open(file_path, 'r') as f:
@@ -220,6 +220,7 @@ def omdb_request():
             f.write(movie_id[i] + "\t" + unidecode(unquote(info)) + "\n")
             f.flush()
     f.close()
+
 
 
 if __name__ == "__main__":
