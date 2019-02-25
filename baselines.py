@@ -245,9 +245,9 @@ class Preprocessing():
             # produce_dict 
             product_dict = meta['Production'].split('/')
             for prod in product_dict:
-                if prod[0]==' ':
+                if prod[0] == ' ':
                     prod = prod[1:]
-                if prod[-1]==' ':
+                if prod[-1] == ' ':
                     prod = prod[:-2]
                 self.product_dict[prod] += 1 
 
@@ -382,9 +382,8 @@ class Regression:
             movie_id = row[1]['id']
             movie_revenue = row[1]['revenue']
             movie_budget = row[1]['budget']
-            movie_release_date = row[1]['release_date']#2009-12-10
-            
-            if  movie_orig_lang == 'en' and movie_revenue >= 10000 and movie_budget >= 10000 and int(movie_release_date.split('-')[0]) >=2005:
+            movie_release_date = row[1]['release_date'] #2009-12-10
+            if movie_orig_lang == 'en' and movie_revenue >= 10000 and movie_budget >= 10000 and int(movie_release_date.split('-')[0]) >=2005:
                 self.movie_chosen_dict[movie_id] = 1
 
     def train_test_split(self):
@@ -500,6 +499,7 @@ class Regression:
                 self.test_X[i].extend((list(test[i,:])))
             # self.train_X = np.c_[self.train_X, train]
             # self.test_X = np.c_[self.test_X, test]
+
         def One_hot_embedding():
             # self.lang_embed - defaultdict(lambda:0)
             all_df = pd.DataFrame(pd.read_csv('./tables/omdb_full.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
