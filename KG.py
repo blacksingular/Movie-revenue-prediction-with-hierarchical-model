@@ -10,6 +10,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import numpy as np
 import pdb
+import lightgbm as lgb
 import pandas as pd
 import ast
 import csv
@@ -39,8 +40,8 @@ from utils import *
 # from keras.optimizers import Adam
 # from keras import metrics
 # from numpy import loadtxt
-from xgboost import XGBRegressor
-# import keras as K
+# from xgboost import XGBRegressor
+# # import keras as K
 # from keras.models import Sequential
 # from keras.layers import Dense,Dropout,Activation
 # from keras.callbacks import EarlyStopping
@@ -112,14 +113,14 @@ class KnowledgeGraph():
                     tmp[-1] = ''.join(re.findall(r'\d+', tmp[-1])) # 
                     tmp[-2] = tmp[-2][:tmp[-2].find(" ")]
                     for i in range(2, 8):
-                        # if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
-                        # if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")] # country first
+                        if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
+                        if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")] # country first
                         if tmp[i] == 'N/A': 
                             tmp[i] = 'unknown' 
                             continue
 
                     for i in [6,7]:
-                        if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(", ")]  
+                        if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(", ")]
                     for i in [2]:
                         tmp[i] = tmp[i].split(", ")
                     for i in [3]:
@@ -456,7 +457,7 @@ class Regression():
             # print(len(self.test_X))
             # print(len(self.train_X[19995]))
 
-    def pre_processing(self):
+    def pre_processing_Li(self):
         train_df = pd.DataFrame(pd.read_csv('./tables/omdb_full_train.csv', usecols=[1, 2,3,4,5, 6, 7, 8, 9]))
         # print(train_df.Language.describe())
         # print(train_df.Country.describe())
@@ -665,8 +666,115 @@ class Regression():
         
         # self.train_X = np.c_[self.train_X, train]
         #     self.test_X = np.c_[self.test_X, test]
-        
 
+    def pre_processing_gao(self):
+        train_df = pd.DataFrame(pd.read_csv('./tables/omdb_train.csv', header=None))
+        test_df = pd.DataFrame(pd.read_csv('./tables/omdb_test.csv', header=None))
+        params = ["Language", "Country", "Actors", "Director", "Genre", "writer"]
+
+        self.train_y = np.array(train_df.iloc[:, -1][1:])
+        self.test_y = np.array(test_df.iloc[:, -1][1:])
+        print(train_df.iloc[1:, 1:9][1:])
+        self.train_X = np.array(list(map(int, train_df.iloc[:, 1:9][1:])))
+        print(self.train_X)
+        # exit()
+        self.test_X = np.array(test_df.iloc[1:, 1:9])
+        w = np.random.rand(8,)
+        train_data = lgb.Dataset(self.train_X, label=self.train_y, weight=w)
+        param = {'num_leaves':31, 'num_trees':100}
+        param['metric'] = 'auc'
+        num_round = 10
+        bst = lgb.train(param, train_data, num_round)
+        self.y_pre_test = bst.predict(self.test_X)
+        self.y_pre_train = bst.predict(self.train_X)
+        # self.train_X = np.c_[np.array(train_df["Year"]).reshape(-1, 1), np.array(list(map(float, train_df["Runtime"]))).reshape(-1, 1)]
+
+        # self.test_X = np.c_[np.array(test_df["Year"]), np.array(list(map(float, test_df["Runtime"]))).reshape(-1, 1)]
+        # self.train_X = []
+        # self.test_X = []
+        # for i in range(len(train_df["Year"])):
+        #     self.train_X.append([train_df["Year"][i]])
+        # for i in range(len(self.train_X)):
+        #     self.train_X[i].append(float(train_df["Runtime"][i]))
+        # for i in range(len(test_df["Year"])):
+        #     self.test_X.append([test_df["Year"][i]])
+        # for i in range(len(self.test_X)):
+        #     self.test_X[i].append(float(test_df["Runtime"][i]))
+        #
+        # def one_hot(string):
+        #     enc = preprocessing.OneHotEncoder(handle_unknown='ignore')
+        #     enc.fit(np.array(list(set(train_df[string]))).reshape(-1, 1))
+        #     train = enc.transform(np.array(list(train_df[string])).reshape(-1, 1)).toarray()
+        #     test = enc.transform(np.array(test_df[string]).reshape(-1, 1)).toarray()
+        #
+        #     for i in range(len(self.train_X)):
+        #         self.train_X[i].extend((list(train[i, :])))
+        #     for i in range(len(self.test_X)):
+        #         self.test_X[i].extend((list(test[i, :])))
+        #     # self.train_X = np.c_[self.train_X, train]
+        #     # self.test_X = np.c_[self.test_X, test]
+        #
+        # def One_hot_embedding():
+        #     # self.lang_embed - defaultdict(lambda:0)
+        #     all_df = pd.DataFrame(pd.read_csv('./tables/omdb_full.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
+        #     all_df_train = pd.DataFrame(
+        #         pd.read_csv('./tables/omdb_full_train.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
+        #     all_df_test = pd.DataFrame(pd.read_csv('./tables/omdb_full_test.csv', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 9]))
+        #
+        #     genre_list = list(all_df_train['Genre'])
+        #     for genre in genre_list:
+        #         genre = ast.literal_eval(genre)
+        #         for x in genre:
+        #             self.genre_embed[x] += 1
+        #     genre_num = len(self.genre_embed.keys())
+        #
+        #     index = 0
+        #     for genre in self.genre_embed.keys():
+        #         self.genre_embed[genre] = [0] * genre_num
+        #         self.genre_embed[genre][index] = 1
+        #         index += 1
+        #     # print(self.actor_embed)
+        #     """actor"""
+        #     actor_list = list(all_df_train['Actors'])
+        #     for actor in actor_list:
+        #         actor = ast.literal_eval(actor)
+        #         for x in actor[:3]:
+        #             self.actor_director_writor_embed[x] += 1
+        #             self.actor_embed[x] += 1
+        #     actor_num = len(self.actor_director_writor_embed.keys())
+        #     print('num of actor: ', len(self.actor_director_writor_embed))
+        #     # exit()
+        #     # c = Counter(self.actor_director_writor_embed).most_common(20)
+        #
+        #     """director"""
+        #     director_list = list(all_df_train['Director'])
+        #     # print(len(director_
+        #     for director in director_list:
+        #         self.director_embed[director.replace('(co-director)', '')] += 1
+        #         self.actor_director_writor_embed[director.replace('(co-director)', '')] += 1
+        #     print('num of director ', len(self.director_embed))
+        #     # print(len(self.actor_director_writor_embed))
+        #
+        #     """writer"""
+        #     writer_list = list(all_df_train['Writer'])
+        #     # print(len(writer_list))
+        #     for writer in writer_list:
+        #         self.writor_embed[writer.split(' (')[0]] += 1
+        #         self.actor_director_writor_embed[writer.split(' (')[0]] += 1
+        #     # print(self.writor_embed)
+        #     print('num of writor : ', len(self.writor_embed))
+        #     print('total num of human: ', len(self.actor_director_writor_embed))
+        #
+        #     index = 0
+        #     for man in self.actor_director_writor_embed.keys():
+        #         self.actor_director_writor_embed[man] = [0] * len(self.actor_director_writor_embed)
+        #         self.actor_director_writor_embed[man][index] = 1
+        #         index += 1
+        #
+        # for p in params:
+        #     one_hot(p)
+        #
+        # One_hot_embedding()
     def pca_reduction(self):
         pca = PCA(n_components= 20)
         pca.fit(self.train_X)
@@ -822,6 +930,7 @@ if __name__ == "__main__":
     
     # exit()
     # KG.correlations()
+    # exit()
     # KG.descrete_feature_plot()
     # KG.feature_analysis()
     # exit()
@@ -837,8 +946,13 @@ if __name__ == "__main__":
 
 
     Reg = Regression()
-    Reg.pre_processing()
-    Reg.pca_reduction()
+    Reg.pre_processing_Li()
+    exit()
+    # Reg.pre_processing_gao()
+    print(Reg.evaluation())
+    exit()
+    # exit()
+    # Reg.pca_reduction()
     # exit()
     # exit()
     # Reg.datacleaning()
@@ -847,9 +961,9 @@ if __name__ == "__main__":
 
     with open('./result.txt', 'w') as f:
 
-        print('Linear')
-        Reg.line_regression()
-        f.write(Reg.evaluation())
+        # print('Linear')
+        # Reg.line_regression()
+        # f.write(Reg.evaluation())
         
 
         
@@ -858,12 +972,12 @@ if __name__ == "__main__":
         #     Reg.logistic_regression(c)
         #     f.write(Reg.evaluation())
 
-        # print('GBR')
-        # for n in [800]:
-        #     for s in [25,30]:
-        #         Reg.GradientBoosting_regression(n,s)
-        #         f.write(Reg.evaluation())
-        # exit()
+        print('GBR')
+        for n in [1000]:
+            for s in [10]:
+                Reg.GradientBoosting_regression(n,s)
+                f.write(Reg.evaluation())
+        exit()
         # print('SVM')
         # # for c in [0.5,0.6,0.8,1.0,1.2,1.5,1.7,3]:
         # Reg.svm_regression()
