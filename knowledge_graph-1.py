@@ -1,5 +1,10 @@
 # coding: utf-8
 
+'''
+It's the earliest version of work. Using the movieslist dataset to build a baseline. Now it's useless except
+generate HIN function to build knowledge graph
+2019/2/24
+'''
 from utils import *
 import pdb
 import pandas as pd

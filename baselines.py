@@ -1,11 +1,14 @@
+'''
+Building baseline using some traditional machine learning algorithms
+2019/2/24
+'''
+
 from __future__ import print_function
-import imp
-
 import matplotlib.pyplot as plt
-
 # import matplotlib.pyplot as plt;
 # plt.rcdefaults()
 # from matplotlib.ticker import FuncFormatter
+
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import numpy as np
@@ -45,7 +48,7 @@ from utils import *
 # from keras.models import Sequential
 # from keras.layers import Dense,Dropout,Activation
 # from keras.callbacks import EarlyStopping
-# # from knowledge_graph.KnowledgeGraph import evaluation as EVA
+# # from knowledge_graph.Preprocessing import evaluation as EVA
 #
 # # import keras
 # # from keras.datasets import mnist
@@ -61,7 +64,7 @@ imdb_path = './tables/movie_info.txt'
 imdb_csv_path = './tables/omdb.csv'
 
 
-class KnowledgeGraph():
+class Preprocessing():
     def __init__(self):
         self.movie_meta_dict = dict()
         self.movie_chosen_dict = dict()
@@ -73,25 +76,25 @@ class KnowledgeGraph():
         self.home_recount = 1
         self.home_node_dict = dict()
         
-    def datacleaning(self):
-        # this the data cleaning for KG (only EN )
-        # only care about the genre, id
-        movie_df = pd.DataFrame(pd.read_csv(movies_path))
-        # first filter the 'en' 
-        movie_recount = 0
-        for row in movie_df[['id','genres','original_language']].iterrows():
-            movie_orig_lang = row[1]['original_language']
-            movie_id = row[1]['id']
-            if  movie_orig_lang == 'en':
-                if movie_id not in self.movie_chosen_dict:
-                    # for heterogenous
-                    self.movie_chosen_dict[movie_id] = 'm'+str(movie_recount)
-                    movie_recount +=1 
+    # def data_cleaning(self):
+    #     # this is the data cleaning for Pre (only EN )
+    #     # only care about the genre, id
+    #     movie_df = pd.DataFrame(pd.read_csv(movies_path))
+    #     # first filter the 'en' 
+    #     movie_recount = 0
+    #     for row in movie_df[['id', 'genres', 'original_language']].iterrows():
+    #         movie_orig_lang = row[1]['original_language']
+    #         movie_id = row[1]['id']
+    #         if movie_orig_lang == 'en':
+    #             if movie_id not in self.movie_chosen_dict:
+    #                 # for heterogenous
+    #                 self.movie_chosen_dict[movie_id] = 'm' + str(movie_recount)
+    #                 movie_recount += 1 
+    # 
+    #     # print(self.genre_chosen_list)   
+    #     # print(len(self.movie_chosen_dict))# total 4505
     
-        # print(self.genre_chosen_list)   
-        # print(len(self.movie_chosen_dict))# total 4505
-    
-    def datacleaning_imdb(self):
+    def data_cleaning(self):
         params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "Runtime", "BoxOffice"]
         csv_file = open('./tables/omdb_full.csv', 'w', newline='')
         train_csv_file = open('./tables/omdb_full_train.csv', 'w', newline='')
@@ -110,11 +113,11 @@ class KnowledgeGraph():
                 if movie_meta_dict['Type'] == 'movie' and 2008 <= int(movie_meta_dict['Year']) <= 2019 and movie_meta_dict['Runtime'] != "N/": # filter the movie out
                     for p in params:
                         tmp.append(movie_meta_dict.get(p, ""))
-                    tmp[-1] = ''.join(re.findall(r'\d+', tmp[-1])) # 
-                    tmp[-2] = tmp[-2][:tmp[-2].find(" ")]
+                    tmp[-1] = ''.join(re.findall(r'\d+', tmp[-1]))  # remove "$"s and "million"s
+                    tmp[-2] = tmp[-2][:tmp[-2].find(" ")]  # remain the first one and discard others
                     for i in range(2, 8):
                         if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
-                        if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")] # country first
+                        if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")]  # country first
                         if tmp[i] == 'N/A': 
                             tmp[i] = 'unknown' 
                             continue
@@ -173,7 +176,8 @@ class KnowledgeGraph():
 
 #         for word in ['red', 'blue', 'red', 'green', 'blue', 'blue']:
 # ...     cnt[word] += 1
-    
+
+    # find the correlations between box office and feature
     def correlations(self):
         params = ["Title", "Year", "Genre", "Director", "Writer", "Actors", "Language", "Country", "Runtime", "BoxOffice"]
         df = pd.DataFrame(pd.read_csv(imdb_csv_path))
@@ -199,16 +203,11 @@ class KnowledgeGraph():
         for p in params[:-1]:
             score[p] = one_hot(p, boxoffice)
         print(score)
-        exit()
 
-
-        # split the feature and label
-
-    
-    #def feature_analysis(self):
-        # feature_selection = ['Year', 'Rated','Runtime','Genre', 'Director', 'Writer','Actors','Language', 'Country','Ratings','imdbRating','imdbVotes','Type','BoxOffice','Production']
+    def feature_analysis(self):
+        feature_selection = ['Year', 'Rated','Runtime','Genre', 'Director', 'Writer','Actors','Language', 'Country','Ratings','imdbRating','imdbVotes','Type','BoxOffice','Production']
         # continues feature covariance
-        # descrete feature distribution 
+        # descrete feature distribution
         self.train_movieid_label = defaultdict(lambda:0)
         self.test_movieid_label = defaultdict(lambda:0)
 
@@ -302,18 +301,18 @@ class KnowledgeGraph():
                         genre_recount += 1 
     
     def homo_node_normalization(self):
-        for movie_ori, m_id in KG.movie_chosen_dict.items():
+        for movie_ori, m_id in Pre.movie_chosen_dict.items():
             self.home_node_dict[m_id] = self.home_recount
             self.home_recount += 1 
-        for actor_ori, a_id in KG.actor_chosen_dict.items():
+        for actor_ori, a_id in Pre.actor_chosen_dict.items():
             self.home_node_dict[a_id] = self.home_recount
             self.home_recount += 1
 
-        for direc_ori, d_id in KG.director_chosen_dict.items():
+        for direc_ori, d_id in Pre.director_chosen_dict.items():
             self.home_node_dict[d_id] = self.home_recount
             self.home_recount += 1
         
-        for genre_ori, g_id in KG.genre_node_dict.items():
+        for genre_ori, g_id in Pre.genre_node_dict.items():
             self.home_node_dict[g_id] = self.home_recount
             self.home_recount += 1
 
@@ -350,10 +349,10 @@ class KnowledgeGraph():
                         f.write('{}\t{}\t1\n'.format(director_global, movie_global))
         f.close()
 
- 
 
-class Regression():
-    #this is 
+class Regression:
+
+    # this is a set of regression algorithms
     def __init__(self):
         self.movie_chosen_dict = dict()
         self.train_movie_chosen_dict = dict()
@@ -371,6 +370,7 @@ class Regression():
         self.director_embed = defaultdict(lambda:0)
         self.writor_embed = defaultdict(lambda:0)
         self.genre_embed = defaultdict(lambda:0)
+
     def datacleaning(self):
         # only get en, from 2005 - 2016, have budge above 10000, have box office above 10000
 
@@ -776,7 +776,7 @@ class Regression():
         #
         # One_hot_embedding()
     def pca_reduction(self):
-        pca = PCA(n_components= 20)
+        pca = PCA(n_components=20)
         pca.fit(self.train_X)
         print(pca.explained_variance_ratio_)  
 
@@ -789,7 +789,7 @@ class Regression():
         self.y_pre_test = lr.predict(self.test_X)
         self.y_pre_train = lr.predict(self.train_X)
 
-    def logistic_regression(self,c):
+    def logistic_regression(self, c):
         lor = LoR(C=c)
         # print(self.train_X)
         lor.fit(self.train_X, self.train_y)
@@ -798,7 +798,7 @@ class Regression():
         # return self.y_pre_test, self.y_pre_train
 
     def svm_regression(self):
-        c = [0.5,0.6,0.8,1.0,1.2,1.5,1.7,3]
+        c = [0.5, 0.6, 0.8, 1.0, 1.2, 1.5, 1.7, 3]
         svr = SVR(kernel='linear')
         print(svr)
         svr.fit(self.train_X, self.train_y)
@@ -925,24 +925,24 @@ class Regression():
 
 
 if __name__ == "__main__":
-    KG = KnowledgeGraph()
-    # KG.datacleaning_imdb()
+    Pre = Preprocessing()
+    # Pre.data_cleaning()
     
     # exit()
-    # KG.correlations()
+    # Pre.correlations()
     # exit()
-    # KG.descrete_feature_plot()
-    # KG.feature_analysis()
+    # Pre.descrete_feature_plot()
+    # Pre.feature_analysis()
     # exit()
-    # KG.feature_correalation_coefficient('Year')
-    # KG.feature_correalation_coefficient('Metascore')
-    # KG.feature_correalation_coefficient('imdbRating')
-    # KG.feature_correalation_coefficient('Metascore')
+    # Pre.feature_correalation_coefficient('Year')
+    # Pre.feature_correalation_coefficient('Metascore')
+    # Pre.feature_correalation_coefficient('imdbRating')
+    # Pre.feature_correalation_coefficient('Metascore')
     # exit()
-    # KG.datacleaning()
-    # KG.genre_director_actor_node()
-    # KG.homo_node_normalization()
-    # KG.homo_edge()
+    # Pre.datacleaning()
+    # Pre.genre_director_actor_node()
+    # Pre.homo_node_normalization()
+    # Pre.homo_edge()
 
 
     Reg = Regression()
@@ -957,7 +957,7 @@ if __name__ == "__main__":
     # exit()
     # Reg.datacleaning()
     # Reg.train_test_split()
-    # Reg.embedding_instance(KG.home_node_dict, KG.movie_chosen_dict, KG.actor_chosen_dict, KG.director_chosen_dict, KG.genre_node_dict)
+    # Reg.embedding_instance(Pre.home_node_dict, Pre.movie_chosen_dict, Pre.actor_chosen_dict, Pre.director_chosen_dict, Pre.genre_node_dict)
 
     with open('./result.txt', 'w') as f:
 
@@ -1004,10 +1004,10 @@ if __name__ == "__main__":
     # print('MLP_his')
     # Reg.MLP_sklearn()
     # Reg.evaluation()
-    # print(sorted(KG.movie_chosen_dict.items(), key=lambda item: item[1]))
-    # print(sorted(KG.actor_chosen_dict.items(), key=lambda item: item[1]))
-    # print(sorted(KG.director_chosen_dict.items(), key=lambda item: item[1]))
-    # print(sorted(KG.genre_node_dict.items(), key=lambda item: item[1]))
+    # print(sorted(Pre.movie_chosen_dict.items(), key=lambda item: item[1]))
+    # print(sorted(Pre.actor_chosen_dict.items(), key=lambda item: item[1]))
+    # print(sorted(Pre.director_chosen_dict.items(), key=lambda item: item[1]))
+    # print(sorted(Pre.genre_node_dict.items(), key=lambda item: item[1]))
 
 
   

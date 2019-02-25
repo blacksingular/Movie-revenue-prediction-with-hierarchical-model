@@ -3,7 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="f8d40a57-8429-47ad-8fb7-97ec37da5f0a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/KG.py" beforeDir="false" afterPath="$PROJECT_DIR$/KG.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/KG.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/knowledge_graph-1.py" beforeDir="false" afterPath="$PROJECT_DIR$/knowledge_graph-1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knowledge_graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/knowledge_graph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,24 +34,29 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/KG.py">
+        <entry file="file://$PROJECT_DIR$/baselines.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1326">
-              <caret line="925" column="12" lean-forward="true" selection-start-line="925" selection-start-column="12" selection-end-line="925" selection-end-column="12" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/knowledge_graph.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1104">
-              <caret line="46" column="58" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="58" />
+            <state relative-caret-position="-4243">
+              <caret line="791" column="48" selection-start-line="791" selection-start-column="48" selection-end-line="791" selection-end-column="48" />
+              <folding>
+                <element signature="e#10#47#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>year_range</find>
+      <find>KnowledgeGraph</find>
+      <find>datacleaning_imdb</find>
+      <find>data_cleaning</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>self.year_range</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -57,6 +65,10 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/KG.py" />
+        <option value="$PROJECT_DIR$/crawl.py" />
+        <option value="$PROJECT_DIR$/knowledge_graph-1.py" />
+        <option value="$PROJECT_DIR$/knowledge_graph.py" />
+        <option value="$PROJECT_DIR$/baselines.py" />
       </list>
     </option>
   </component>
@@ -71,7 +83,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -83,6 +94,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -144,16 +156,17 @@
       <workItem from="1550637896598" duration="7047000" />
       <workItem from="1550677359835" duration="9563000" />
       <workItem from="1550736847393" duration="1989000" />
+      <workItem from="1551060738612" duration="2019000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="19203000" />
+    <option name="totallyTimeSpent" value="21222000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.123324394" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.12466488" />
       <window_info id="Structure" order="1" sideWeight="0.5042194" side_tool="true" weight="0.121983916" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -185,17 +198,53 @@
         <state relative-caret-position="-4614" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/KG.py">
+    <entry file="file://$PROJECT_DIR$/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1326">
-          <caret line="925" column="12" lean-forward="true" selection-start-line="925" selection-start-column="12" selection-end-line="925" selection-end-column="12" />
+        <state>
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/crawl.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="203" column="22" lean-forward="true" selection-start-line="203" selection-start-column="22" selection-end-line="203" selection-end-column="22" />
+          <folding>
+            <element signature="e#19#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/knowledge_graph-1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="5" column="9" selection-start-line="5" selection-start-column="9" selection-end-line="5" selection-end-column="9" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/knowledge_graph.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1104">
-          <caret line="46" column="58" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="58" />
+        <state relative-caret-position="120">
+          <caret line="5" column="9" selection-start-line="5" selection-start-column="9" selection-end-line="5" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/KG.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="3" column="18" lean-forward="true" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/baselines.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4243">
+          <caret line="791" column="48" selection-start-line="791" selection-start-column="48" selection-end-line="791" selection-end-column="48" />
+          <folding>
+            <element signature="e#10#47#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
