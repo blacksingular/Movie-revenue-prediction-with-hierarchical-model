@@ -184,17 +184,18 @@ class Regression:
     def GBDT(self, n, step):
         best_params = {'n_estimators': 1000, 'max_depth': 10, 'min_samples_split': 2,
                   'learning_rate': 0.01, 'loss': 'huber'}
-        params = {'n_estimators': n, 'max_depth': step, 'min_samples_split': 2,
+        params = {'max_depth': step, 'min_samples_split': 2,
                   'learning_rate': 0.01, 'loss': 'huber'}
         model = GBR(**params)
-        model.fit(self.train_X, self.train_y)
-        w = model.get_params()
-        self.y_pre_train = model.predict(self.train_X)
-        self.y_pre_valid = model.predict(self.valid_X)
-        return w
-        # gsearch1 = GridSearchCV(estimator=model)
-        # gsearch1.fit(self.train_X, self.train_y)
-        # print(gsearch1.best_params_, gsearch1.best_score_)
+        param_test1 = {'n_estimators': range(100, 1000, 10)}
+        # model.fit(self.train_X, self.train_y)
+        # w = model.get_params()
+        # self.y_pre_train = model.predict(self.train_X)
+        # self.y_pre_valid = model.predict(self.valid_X)
+        # return w
+        gsearch1 = GridSearchCV(estimator=model, param_grid=param_test1)
+        gsearch1.fit(self.train_X, self.train_y)
+        print(gsearch1.best_params_, gsearch1.best_score_)
     
     def line_regression(self):
         model = LR()
