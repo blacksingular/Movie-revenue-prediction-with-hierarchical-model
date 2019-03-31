@@ -493,10 +493,10 @@ class Regression:
         # self.y_pre_train = np.exp(model_high.predict(self.txh).reshape(-1, 1))
         # self.y_pre_valid_log = model_high.predict(self.vxh).reshape(-1, 1)
         # self.y_pre_valid = np.exp(model_high.predict(self.vxh).reshape(-1, 1))
-        if 0:
-            print(np.argsort(model.feature_importances_))
+        if 1:
+            print(np.argsort(model_low.feature_importances_))
             x = ['Language', 'Year', 'Country', 'Genre', 'Runtime', 'Actor', 'Director', 'Writer']
-            y = sorted(model.feature_importances_)
+            y = sorted(model_low.feature_importances_)
             plt.bar(x, y)
             plt.title('Feature Importance')
             plt.xlabel('Feature')
