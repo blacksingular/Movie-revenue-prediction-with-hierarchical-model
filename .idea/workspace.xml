@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8d40a57-8429-47ad-8fb7-97ec37da5f0a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/captain_marvel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/improvement.py" beforeDir="false" afterPath="$PROJECT_DIR$/improvement.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/result.txt" beforeDir="false" afterPath="$PROJECT_DIR$/result.txt" afterDir="false" />
     </list>
@@ -16,7 +18,7 @@
     <SUITE FILE_PATH="coverage/SI699$a.coverage" NAME="a Coverage Results" MODIFIED="1552970118312" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SI699$utils.coverage" NAME="utils Coverage Results" MODIFIED="1553155510132" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SI699$quicksort.coverage" NAME="quicksort Coverage Results" MODIFIED="1551644632064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/SI699$improvement.coverage" NAME="improvement Coverage Results" MODIFIED="1553780889765" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SI699$improvement.coverage" NAME="improvement Coverage Results" MODIFIED="1554390957859" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -37,10 +39,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/improvement.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8270">
-              <caret line="503" column="22" lean-forward="true" selection-start-line="503" selection-start-column="22" selection-end-line="503" selection-end-column="22" />
+            <state relative-caret-position="364">
+              <caret line="325" lean-forward="true" selection-start-line="323" selection-start-column="44" selection-end-line="325" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
+                <element signature="e#806#1051#0" />
+                <element signature="e#1090#4469#0" />
+                <element signature="e#4513#5837#0" />
+                <element signature="e#5885#7782#0" />
+                <element signature="e#7817#9149#0" />
+                <element signature="e#15051#20407#0" />
+                <element signature="e#20455#23831#0" />
+                <element signature="e#23856#31781#0" />
+                <element signature="e#31809#38005#0" />
+                <element signature="e#38039#45072#0" />
               </folding>
             </state>
           </provider>
@@ -84,6 +96,9 @@
       <find>omdb</find>
       <find>6960</find>
       <find>69600</find>
+      <find>mode</find>
+      <find>self.train_y_log</find>
+      <find>abs</find>
     </findStrings>
     <replaceStrings>
       <replace>self.year_range</replace>
@@ -106,6 +121,7 @@
         <option value="$PROJECT_DIR$/quicksort.py" />
         <option value="$PROJECT_DIR$/a.py" />
         <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/captain_marvel.py" />
         <option value="$PROJECT_DIR$/improvement.py" />
       </list>
     </option>
@@ -121,7 +137,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -133,6 +148,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -305,17 +321,20 @@
       <workItem from="1553172515456" duration="978000" />
       <workItem from="1553699860258" duration="16504000" />
       <workItem from="1553780802590" duration="155000" />
+      <workItem from="1554311489264" duration="7014000" />
+      <workItem from="1554343551439" duration="18090000" />
+      <workItem from="1554390090489" duration="1716000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="136716000" />
+    <option name="totallyTimeSpent" value="163536000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48866856" visible="true" weight="0.15214477" />
-      <window_info id="Structure" order="1" sideWeight="0.51133144" side_tool="true" visible="true" weight="0.15214477" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48441926" visible="true" weight="0.15817694" />
+      <window_info id="Structure" order="1" sideWeight="0.5155807" side_tool="true" visible="true" weight="0.15817694" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -416,12 +435,29 @@
     <entry file="file://$PROJECT_DIR$/tables/PlotID.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/captain_marvel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="48">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/improvement.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8270">
-          <caret line="503" column="22" lean-forward="true" selection-start-line="503" selection-start-column="22" selection-end-line="503" selection-end-column="22" />
+        <state relative-caret-position="364">
+          <caret line="325" lean-forward="true" selection-start-line="323" selection-start-column="44" selection-end-line="325" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#806#1051#0" />
+            <element signature="e#1090#4469#0" />
+            <element signature="e#4513#5837#0" />
+            <element signature="e#5885#7782#0" />
+            <element signature="e#7817#9149#0" />
+            <element signature="e#15051#20407#0" />
+            <element signature="e#20455#23831#0" />
+            <element signature="e#23856#31781#0" />
+            <element signature="e#31809#38005#0" />
+            <element signature="e#38039#45072#0" />
           </folding>
         </state>
       </provider>
