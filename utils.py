@@ -113,17 +113,22 @@ class Cal:
         print(len(ones), len(zeros))
         print(min(10 ** (max(zeros)), 10 ** (max(ones))))
         # add a new label to the training data
-        # new_train_df = pd.concat([data_df, pd.DataFrame(columns=['Label'])])
-        # for i in range(len(new_train_df)):
-        #     new_train_df['Label'][i] = 1 if dataTen[i] in ones else 0
-        # print(list(new_train_df['Label']))
-        # # new_train_df.to_csv('./new_tables/new_full_train.csv')
+        new_train_df = pd.concat([data_df, pd.DataFrame(columns=['Label'])])
+        for i in range(len(new_train_df)):
+            new_train_df['Label'][i] = 1 if dataTen[i] in ones else 0
+        print(list(new_train_df['Label']))
+        new_train_df.to_csv('./new_tables/new_full_train.csv')
 
         # add a new label to the valid data
         new_valid_df = pd.concat([pd.DataFrame(pd.read_csv("./new_tables/omdb_full_valid.csv")), pd.DataFrame(columns=['Label'])])
-        revenue = list(new_valid_df['BoxOffice'])
-        for i in range(len(new_valid_df)):
-            new_valid_df['Label'][i] = 1 if revenue[i] >= 6800000 else 0
+        revenue = [np.log10(x) for x in list(new_valid_df['BoxOffice'])]
+        # revenue = np.array(np.log10(x) for x in [list(new_valid_df['BoxOffice'])]).reshape(-1,1)
+        print(revenue)
+        revenue = np.array(revenue).reshape(-1,1)
+        prdict_valid = list(modelTen.predict(revenue))
+        print(prdict_valid)
+        for i in range(len(prdict_valid)):
+            new_valid_df['Label'][i] = prdict_valid[i]
         new_valid_df.to_csv('./new_tables/new_full_valid.csv')
 
         # labelE = modelE.predict(dataE)
@@ -131,23 +136,33 @@ class Cal:
         # print(sum(dif), len(labelTen))
         # meanTen = modelTen.means_
         # varTen = modelTen.covariances_
-
+        # print(data)
+        # print(revenue)
         # plot distribution
-        def plot():
-            plt.hist(data, bins=100, normed=0, facecolor="blue", edgecolor="black", alpha=0.7)
+        # print(10**revenue)
+        # print(min(10**(revenue)),max(10**(revenue)))
+        def plot(revenue):
+            plt.hist(revenue, bins=50, range=(0,10),facecolor="blue", edgecolor="black", alpha=0.7)
             plt.xlabel('Revenue in loge space')
             plt.ylabel('Frequency')
             plt.title('Revenue Distribution')
-            h1 = 520
-            h2 = 180
-            g1 = np.array([h1 / (var[0] * np.sqrt(2 * np.pi)) * np.exp(-(x - mean[0]) ** 2 / (2 * var[0] ** 2)) for x in
-                  np.linspace(0, 23, 200)]).reshape(-1, 1)
-            g2 = np.array([h2 / (var[1] * np.sqrt(2 * np.pi)) * np.exp(-(x - mean[1]) ** 2 / (2 * var[1] ** 2)) for x in
-                  np.linspace(0, 23, 200)]).reshape(-1, 1)
-            plt.plot(np.linspace(0, 23, 200), g1, 'r', linewidth=5.0)
-            plt.plot(np.linspace(0, 23, 200), g2, 'y', linewidth=5.0)
+            
+
+            
+            # h1 = 520
+            # h2 = 180
+            # mean = modelTen.means_
+            # var = modelTen.covariances_ 
+            # print(mean,var)
+            # g1 = np.array([h1 / (var[0] * np.sqrt(2 * np.pi)) * np.exp(-(x - mean[0]) ** 2 / (2 * var[0] ** 2)) for x in
+            #       np.linspace(-100, 23, 200)]).reshape(-1, 1)
+            # g2 = np.array([h2 / (var[1] * np.sqrt(2 * np.pi)) * np.exp(-(x - mean[1]) ** 2 / (2 * var[1] ** 2)) for x in
+            #       np.linspace(-100, 23, 200)]).reshape(-1, 1)
+            # plt.plot(np.linspace(-100, 23, 200), g1, 'r', linewidth=5.0)
+            # plt.plot(np.linspace(-100, 23, 200), g2, 'y', linewidth=5.0)
             plt.show()
-        # plot()
+        plot(dataTen)
+        plot(revenue)
 
 
 class Classification:
