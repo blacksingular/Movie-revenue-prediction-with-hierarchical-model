@@ -35,3 +35,19 @@ To train the model as well as do some test. Run:
 ```
 python improvement.py
 ```
+
+## Results
+
+we evaluated our model on 3259 movies from 2008 to 2019 using Mean Absolute Rrror [(MAE)](https://en.wikipedia.org/wiki/Mean_absolute_error) and Symmetric Mean Absolute Percentage Error 
+[(SMAPE)](https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error)
+
+|               | MAE ( $ M )         | SNAPE  |
+| ------------- |:----------------: | ---------------:|
+| Train         | $ 7.1 M        | 0.451 |
+| Test          | $ 23.5 M       | 0.905 |
+
+
+
+
+
+
