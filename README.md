@@ -49,5 +49,12 @@ we evaluated our model on 3259 movies from 2008 to 2019 using Mean Absolute Rrro
 
 
 
+### Authors
+Team Lucy: Jiazhao Li, Yun Gao -- Dept. EECS of University of Michigan. 
+ 
+
+### Acknowledgments
+
+Thanks to project mentor: Prof. Qiaozhu Mei for inspiration and suggestions.
 
 
