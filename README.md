@@ -4,6 +4,8 @@ Code for SI 699 course project: Using hierechical regression model to predcit th
 
 ## Getting Started
 
+### Installing
+
 1.To setup on your local machine:
 Install Anaconda with Python >= 3.6.
 
