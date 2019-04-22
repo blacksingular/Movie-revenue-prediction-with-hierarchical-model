@@ -2,13 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8d40a57-8429-47ad-8fb7-97ec37da5f0a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/new-improvement.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/new_tables/new_full_train_11.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/new_tables/new_full_valid_11.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/improvement.py" beforeDir="false" afterPath="$PROJECT_DIR$/improvement.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/new_tables/new_full_train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/new_full_train.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/new_tables/new_full_valid.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/new_full_valid.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_tables/omdb_full_test.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/omdb_full_test.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/new_tables/omdb_full_train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/omdb_full_train.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/new_tables/omdb_full_valid.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/omdb_full_valid.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/result.txt" beforeDir="false" afterPath="$PROJECT_DIR$/result.txt" afterDir="false" />
@@ -44,24 +44,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/improvement.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="13224">
-              <caret line="560" column="26" selection-start-line="560" selection-start-column="24" selection-end-line="560" selection-end-column="26" />
+            <state relative-caret-position="178">
+              <caret line="19" column="37" lean-forward="true" selection-start-line="19" selection-start-column="37" selection-end-line="19" selection-end-column="37" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
-                <element signature="e#806#1051#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/storage.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="118">
-              <caret line="204" column="74" lean-forward="true" selection-start-line="204" selection-start-column="74" selection-end-line="204" selection-end-column="74" />
+              <caret line="204" column="74" selection-start-line="204" selection-start-column="74" selection-end-line="204" selection-end-column="74" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -72,8 +71,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="125" column="65" selection-start-line="125" selection-start-column="65" selection-end-line="125" selection-end-column="65" />
+            <state relative-caret-position="216">
+              <caret line="126" column="65" selection-start-line="126" selection-start-column="65" selection-end-line="126" selection-end-column="65" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -111,6 +110,7 @@
       <find>self.train_y_log</find>
       <find>abs</find>
       <find>one_hot</find>
+      <find>np.log</find>
     </findStrings>
     <replaceStrings>
       <replace>self.year_range</replace>
@@ -140,7 +140,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="170" />
     <option name="y" value="10" />
     <option name="width" value="1405" />
@@ -345,23 +345,22 @@
       <workItem from="1554390090489" duration="1716000" />
       <workItem from="1554762939320" duration="1867000" />
       <workItem from="1555451905401" duration="27469000" />
-      <workItem from="1555956817531" duration="6022000" />
+      <workItem from="1555956817531" duration="6441000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="198894000" />
+    <option name="totallyTimeSpent" value="199313000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.47940075" visible="true" weight="0.16420911" />
-      <window_info id="Structure" order="1" sideWeight="0.52059925" side_tool="true" visible="true" weight="0.16420911" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.48016998" visible="true" weight="0.16420911" />
+      <window_info id="Structure" order="1" sideWeight="0.51983005" side_tool="true" visible="true" weight="0.16420911" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.24362606" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.24362606" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -487,21 +486,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="125" column="65" selection-start-line="125" selection-start-column="65" selection-end-line="125" selection-end-column="65" />
+        <state relative-caret-position="216">
+          <caret line="126" column="65" selection-start-line="126" selection-start-column="65" selection-end-line="126" selection-end-column="65" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/improvement.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13224">
-          <caret line="560" column="26" selection-start-line="560" selection-start-column="24" selection-end-line="560" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#806#1051#0" />
           </folding>
         </state>
       </provider>
@@ -509,9 +497,19 @@
     <entry file="file://$PROJECT_DIR$/storage.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="118">
-          <caret line="204" column="74" lean-forward="true" selection-start-line="204" selection-start-column="74" selection-end-line="204" selection-end-column="74" />
+          <caret line="204" column="74" selection-start-line="204" selection-start-column="74" selection-end-line="204" selection-end-column="74" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/improvement.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="19" column="37" lean-forward="true" selection-start-line="19" selection-start-column="37" selection-end-line="19" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
