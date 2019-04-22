@@ -113,17 +113,17 @@ class Cal:
         print(len(ones), len(zeros))
         print(min(10 ** (max(zeros)), 10 ** (max(ones))))
         # add a new label to the training data
-        # new_train_df = pd.concat([data_df, pd.DataFrame(columns=['Label'])])
-        # for i in range(len(new_train_df)):
-        #     new_train_df['Label'][i] = 1 if dataTen[i] in ones else 0
-        # print(list(new_train_df['Label']))
-        # # new_train_df.to_csv('./new_tables/new_full_train.csv')
+        new_train_df = pd.concat([data_df, pd.DataFrame(columns=['Label'])])
+        for i in range(len(new_train_df)):
+            new_train_df['Label'][i] = 1 if dataTen[i] in ones else 0
+        print(list(new_train_df['Label']))
+        new_train_df.to_csv('./new_tables/new_full_train.csv')
 
         # add a new label to the valid data
         new_valid_df = pd.concat([pd.DataFrame(pd.read_csv("./new_tables/omdb_full_valid.csv")), pd.DataFrame(columns=['Label'])])
         revenue = list(new_valid_df['BoxOffice'])
         for i in range(len(new_valid_df)):
-            new_valid_df['Label'][i] = 1 if revenue[i] >= 6800000 else 0
+            new_valid_df['Label'][i] = 1 if revenue[i] >= 5861581 else 0
         new_valid_df.to_csv('./new_tables/new_full_valid.csv')
 
         # labelE = modelE.predict(dataE)

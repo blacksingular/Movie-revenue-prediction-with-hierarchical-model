@@ -71,9 +71,9 @@ class PreProcessing:
                         if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
                         if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")]  # country first
                     writer.writerow(tmp)
-                    if 2008 <= int(meta_dict['Year']) <= 2013:
+                    if 2008 <= int(meta_dict['Year']) <= 2018:
                         train_writer.writerow(tmp)
-                    elif 2013 < int(meta_dict['Year']) <= 2015:
+                    if 2017 <= int(meta_dict['Year']) <= 2018:
                         valid_writer.writerow(tmp)
                     else:
                         test_writer.writerow(tmp)
@@ -93,7 +93,7 @@ class PreProcessing:
         df.to_csv('./new_tables/omdb_full_train.csv')
         df = pd.read_csv('./new_tables/omdb_full_test.csv')
         df = df.drop_duplicates(subset='Title', keep='last')
-        df.to_csv('./new_tables/omdb_full_test.csv')
+        # df.to_csv('./new_tables/omdb_full_test.csv')
         # test the uniqueness
         # df = pd.read_csv('./new_tables/omdb_full.csv')
         # print(df.Title.describe())
@@ -369,17 +369,17 @@ class Classification:
         self.valid_X = np.array(valid_X)
         self.valid_y = np.array(valid_y)
         self.easy_valid_y = np.array(easy_valid_y)
-        print(self.easy_valid_y.shape)
-        # print(valid_X.shape, easy_valid_X.shape, valid_y.shape, easy_valid_y.shape)
-
-        print('roc score of complex on train:', roc_auc_score(self.train_y_c, model.predict(self.train_X)))
-        print('roc score of easy on train:', roc_auc_score(self.train_y_c, easy_model.predict(self.easy_train_X)))
-        print('roc score of complex on valid:', roc_auc_score(self.valid_y[:, 0], model.predict(valid_X)))
-        print('roc score of easy on valid:', roc_auc_score(self.easy_valid_y[:, 0], easy_model.predict(easy_valid_X)))
-        print('accuracy of complex on train:', model.score(self.train_X, self.train_y_c))
-        print('accuracy of easy on train:', easy_model.score(self.easy_train_X, self.train_y_c))
-        print('accuracy of complex on valid:', model.score(valid_X, self.valid_y[:, 0]))
-        print('accuracy of easy on valid:', easy_model.score(easy_valid_X, self.easy_valid_y[:, 0]))
+        # print(self.easy_valid_y.shape)
+        # # print(valid_X.shape, easy_valid_X.shape, valid_y.shape, easy_valid_y.shape)
+        #
+        # print('roc score of complex on train:', roc_auc_score(self.train_y_c, model.predict(self.train_X)))
+        # print('roc score of easy on train:', roc_auc_score(self.train_y_c, easy_model.predict(self.easy_train_X)))
+        # print('roc score of complex on valid:', roc_auc_score(self.valid_y[:, 0], model.predict(valid_X)))
+        # print('roc score of easy on valid:', roc_auc_score(self.easy_valid_y[:, 0], easy_model.predict(easy_valid_X)))
+        # print('accuracy of complex on train:', model.score(self.train_X, self.train_y_c))
+        # print('accuracy of easy on train:', easy_model.score(self.easy_train_X, self.train_y_c))
+        # print('accuracy of complex on valid:', model.score(valid_X, self.valid_y[:, 0]))
+        # print('accuracy of easy on valid:', easy_model.score(easy_valid_X, self.easy_valid_y[:, 0]))
 
         self.ref = model.predict(valid_X)
         self.easy_ref = easy_model.predict(easy_valid_X)
@@ -814,7 +814,7 @@ class RegressionNew:
 
 if __name__ == "__main__":
     Pre = PreProcessing()
-    # Pre.data_cleaning()
+    Pre.data_cleaning()
     Pre.men_representation_old()
     Pre.numerical()
     easy_train_X, easy_valid_X, enc = Pre.one_hot()
@@ -832,13 +832,13 @@ if __name__ == "__main__":
         model_high = Reg.GBDT(1000, 10)
         # Reg.logistic_regression(1)
         # Reg.RandomForest_regression()
-        Reg.plot()
+        # Reg.plot()
         Train_para, Valid_para, Eval = Reg.evaluation()
 
         eReg = Regression(evxl, evxh, evyl, evyh, etxl, etxh, etyl, etyh, men_info, mode='simple')
         eReg.shuffle()
         eReg.GBDT(1000, 10)
-        eReg.plot()
+        # eReg.plot()
         eTrain_para, eValid_para, eEval = eReg.evaluation()
 
         print('mae_train:', (eEval[0] + Eval[0]) / 2)
@@ -850,27 +850,28 @@ if __name__ == "__main__":
         one_hot = np.r_[enc[0].transform(['Action']), enc[1].transform(['English']), enc[2].transform(['USA'])]
 
         men = []
-        directors = ['Anna Boden', 'Ryan Fleck']
+        directors = ['Anthony Russo', 'Joe Russo']
         tmp = []
         for director in directors:
             if director in men_info:
                 tmp.append(men_info[director])
         men.append(sum(tmp) / len(tmp))
 
-        writers = ['Anna Boden', 'Ryan Fleck']
+        writers = ['Christopher Markus', 'Stephen McFeely']
         tmp = []
         for writer in writers:
             if writer in men_info:
                 tmp.append(men_info[writer])
         men.append(sum(tmp) / len(tmp))
 
-        actors = ['Brie Larson', 'Samuel L. Jackson']
+        actors = ['Brie Larson', 'Scarlett Johansson']
         tmp = []
         for actor in actors:
             if actor in men_info:
                 tmp.append(men_info[actor])
         men.append(sum(tmp) / len(tmp))
-        captain_marvel = np.r_[[2019, 124], one_hot, men].reshape(1, -1)
+        captain_marvel = np.r_[[2019, 181], one_hot, men].reshape(1, -1)
+        print(captain_marvel)
         print(np.exp(model_high.predict(captain_marvel)))
 
         # predict revenue for infinity war
@@ -898,6 +899,7 @@ if __name__ == "__main__":
                 tmp.append(med)
         men.append(sum(tmp) / len(tmp))
         infinity_war = np.r_[[2018, 149], one_hot, [259766572], men].reshape(1, -1)
+        print(infinity_war)
         print(np.exp(model_high.predict(infinity_war)))
 
         # predict revenue for fantastic beasts
