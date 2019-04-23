@@ -13,15 +13,17 @@ from sklearn.linear_model import LogisticRegression as LoR
 from sklearn.svm import SVC, SVR
 from sklearn.metrics import roc_auc_score
 import matplotlib.pyplot as plt
-import seaborn as sns; sns.set(color_codes=True)
+import seaborn as sns;
+
+sns.set(color_codes=True)
 import warnings
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 imdb_path = './tables/movie_info.txt'
 week_11 = True
 week_12 = False
-week_13 = False
-med = 1040000
+med = 6960000
 
 
 class PreProcessing:
@@ -37,7 +39,8 @@ class PreProcessing:
         self.mode = mode
 
     def data_cleaning(self):
-        params = ["Title", "Year", "Director", "Writer", "Actors", "Genre", "Language", "Country", "Runtime", "BoxOffice"]
+        params = ["Title", "Year", "Director", "Writer", "Actors", "Genre", "Language", "Country", "Runtime",
+                  "BoxOffice"]
         valid_csv_file = open('./new_tables/omdb_full_valid.csv', 'w', newline='')
         train_csv_file = open('./new_tables/omdb_full_train.csv', 'w', newline='')
         test_csv_file = open('./new_tables/omdb_full_test.csv', 'w', newline='')
@@ -72,29 +75,12 @@ class PreProcessing:
                         if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
                         if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")]  # country first
                     writer.writerow(tmp)
-<<<<<<< HEAD
-                    if 2008 <= int(meta_dict['Year']) <= 2018:
+                    if 2008 <= int(meta_dict['Year']) <= 2013:
                         train_writer.writerow(tmp)
-                    if 2017 <= int(meta_dict['Year']) <= 2018:
+                    elif 2013 < int(meta_dict['Year']) <= 2015:
                         valid_writer.writerow(tmp)
                     else:
                         test_writer.writerow(tmp)
-=======
-                    if week_11 :
-                        if 2008 <= int(meta_dict['Year']) <= 2014:
-                            train_writer.writerow(tmp)
-                        elif 2014 < int(meta_dict['Year']) <= 2015:
-                            valid_writer.writerow(tmp)
-                        else:
-                            test_writer.writerow(tmp)
-                    elif week_13:
-                        if 2008 <= int(meta_dict['Year']) <= 2014:
-                            train_writer.writerow(tmp)
-                        elif 2014 < int(meta_dict['Year']) <= 2019:
-                            valid_writer.writerow(tmp)
-                        else:
-                            test_writer.writerow(tmp)
->>>>>>> 12bfd1421f74f51fb9927798edd095f8806641b7
         valid_csv_file.close()
         train_csv_file.close()
         test_csv_file.close()
@@ -111,12 +97,12 @@ class PreProcessing:
         df.to_csv('./new_tables/omdb_full_train.csv')
         df = pd.read_csv('./new_tables/omdb_full_test.csv')
         df = df.drop_duplicates(subset='Title', keep='last')
-        # df.to_csv('./new_tables/omdb_full_test.csv')
+        df.to_csv('./new_tables/omdb_full_test.csv')
         # test the uniqueness
         # df = pd.read_csv('./new_tables/omdb_full.csv')
         # print(df.Title.describe())
         # exit()
- 
+
     def men_representation(self):
         params = ["Director", "Writer", "Actors"]
         data_df = pd.DataFrame(pd.read_csv("./new_tables/omdb_full.csv"))
@@ -148,12 +134,8 @@ class PreProcessing:
 
     def men_representation_old(self):
         params = ["Director", "Writer", "Actors"]
-        if week_11:
-            train_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_train.csv"))
-            valid_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_valid.csv"))
-        if week_13:
-            train_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_train_13.csv"))
-            valid_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_valid_13.csv"))
+        train_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_train.csv"))
+        valid_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_valid.csv"))
         for p in params:
             # loop for directors, writers, actors
             men = []
@@ -226,13 +208,16 @@ class PreProcessing:
             # train_df = self.train_df
             # valid_df = self.valid_df
             enc = preprocessing.LabelEncoder()
-            enc.fit(np.r_[np.array(train_df[string].dropna()).reshape(-1, 1), np.array(valid_df[string].dropna()).reshape(-1, 1)])
+            enc.fit(np.r_[
+                        np.array(train_df[string].dropna()).reshape(-1, 1), np.array(valid_df[string].dropna()).reshape(
+                            -1, 1)])
             # print(list(enc.classes_))
             # pdb.set_trace()
             # append genre, country and language to the feature after encoding
             self.train_X = np.c_[self.train_X, enc.transform(np.array(train_df[string].dropna()).reshape(-1, 1))]
             self.valid_X = np.c_[self.valid_X, enc.transform(np.array(valid_df[string].dropna()).reshape(-1, 1))]
             return enc
+
         encs = []
         for p in params:
             encs.append(transform(p))
@@ -252,7 +237,7 @@ class PreProcessing:
         for p in params:
             men = []
 
-        # get vector of all params in train
+            # get vector of all params in train
             for t in train_df[p]:
                 tmp = []
                 for m in t.split(', '):
@@ -265,7 +250,7 @@ class PreProcessing:
             self.train_X = np.c_[self.train_X, np.log(men)]
 
             men = []
-        # get vector of all params in valid
+            # get vector of all params in valid
             for t in valid_df[p]:
                 found = True
                 tmp = []
@@ -280,7 +265,6 @@ class PreProcessing:
                         men.append(sum(tmp) / len(tmp))
                     else:
                         men.append(1)
-                
                 if week_12:
                     found = True
                     for m in t.split(', ')[:2]:
@@ -294,7 +278,7 @@ class PreProcessing:
                     else:
                         men.append(-sum(tmp) / len(tmp))
             men = np.array(men).reshape(-1, 1)
-            # print(self.valid_X.shape, np.log(men).shape)
+
             self.valid_X = np.c_[self.valid_X, np.log(men)]
 
         # # try to embedding unseen data using other information in valid
@@ -343,196 +327,10 @@ class PreProcessing:
         #
         # men = np.array(men)
         # self.valid_X = np.c_[self.valid_X, np.log(men)]
-        # print(self.train_y_c.shape, self.train_y.shape)
-        return self.train_X, np.c_[self.train_y_c, self.train_y, self.train_y_log, self.train_y_log10], self.valid_X, np.c_[self.valid_y_c, self.valid_y, self.valid_y_log, self.valid_y_log10], self.men_dict
+        print(self.train_y_c.shape, self.train_y.shape)
+        return self.train_X, np.c_[self.train_y_c, self.train_y, self.train_y_log, self.train_y_log10], self.valid_X, \
+               np.c_[self.valid_y_c, self.valid_y, self.valid_y_log, self.valid_y_log10], self.men_dict
 
-#class PreProcessingNew(PreProcessing):
-    # def __init__(self, mode='all'):
-    #     super.__init__(mode)
-            
-    # def data_cleaning(self):
-    #     params = ["Title", "Year", "Director", "Writer", "Actors", "Genre", "Language", "Country", "Runtime", "BoxOffice"]
-    #     valid_csv_file = open('./new_tables/omdb_full_valid.csv', 'w', newline='')
-    #     train_csv_file = open('./new_tables/omdb_full_train.csv', 'w', newline='')
-    #     test_csv_file = open('./new_tables/omdb_full_test.csv', 'w', newline='')
-    #     all_csv_file = open('./new_tables/omdb_full.csv', 'w', newline='')
-    #     writer = csv.writer(all_csv_file)
-    #     valid_writer = csv.writer(valid_csv_file)
-    #     train_writer = csv.writer(train_csv_file)
-    #     test_writer = csv.writer(test_csv_file)
-    #     writer.writerow(params)
-    #     valid_writer.writerow(params)
-    #     train_writer.writerow(params)
-    #     test_writer.writerow(params)
-    #     with open(imdb_path, 'r') as f:
-    #         for line in f:
-    #             tmp = []
-
-    #             # open txt and get valid data and split it into three parts
-    #             meta_dict = ast.literal_eval(line[line.find("\t") + 1:])
-    #             if self.mode == 'us':
-    #                 condition = [meta_dict[p] != 'N/A' for p in params] + [meta_dict['Country'] == 'USA']
-    #             elif self.mode == 'all':
-    #                 condition = [meta_dict[p] != 'N/A' for p in params]
-    #             if meta_dict['Type'] == 'movie' and 2008 <= int(meta_dict['Year']) <= 2019 and all(condition):
-    #                 for p in params:
-    #                     tmp.append(meta_dict.get(p, ""))
-    #                 # print(tmp[-1])
-    #                 # pdb.set_trace()
-    #                 if tmp[-1].find(".") != -1: tmp[-1] = tmp[-1][:tmp[-1].find(".")]
-    #                 tmp[-1] = ''.join(re.findall(r'\d+', tmp[-1]))  # remove "$"s and "million"s
-    #                 tmp[-2] = tmp[-2][:tmp[-2].find(" ")]  # remove "min"s
-    #                 for i in range(5, 8):
-    #                     if tmp[i].find(",") != -1: tmp[i] = tmp[i][:tmp[i].find(",")]  # genre first
-    #                     if tmp[i].find("(") != -1: tmp[i] = tmp[i][:tmp[i].find("(")]  # country first
-    #                 writer.writerow(tmp)
-    #                 if 2008 <= int(meta_dict['Year']) <= 2015:
-    #                     train_writer.writerow(tmp)
-    #                 elif 2015 < int(meta_dict['Year']) <= 2019:
-    #                     valid_writer.writerow(tmp)
-    #                 else:
-    #                     test_writer.writerow(tmp)
-    #     valid_csv_file.close()
-    #     train_csv_file.close()
-    #     test_csv_file.close()
-    #     all_csv_file.close()
-    #     # clean duplicates
-    #     df = pd.read_csv('./new_tables/omdb_full_valid.csv')
-    #     df = df.drop_duplicates(subset='Title', keep='last')
-    #     df.to_csv('./new_tables/omdb_full_valid.csv')
-    #     df = pd.read_csv('./new_tables/omdb_full.csv')
-    #     df = df.drop_duplicates(subset='Title', keep='last')
-    #     df.to_csv('./new_tables/omdb_full.csv')
-    #     df = pd.read_csv('./new_tables/omdb_full_train.csv')
-    #     df = df.drop_duplicates(subset='Title', keep='last')
-    #     df.to_csv('./new_tables/omdb_full_train.csv')
-    #     df = pd.read_csv('./new_tables/omdb_full_test.csv')
-    #     df = df.drop_duplicates(subset='Title', keep='last')
-    #     df.to_csv('./new_tables/omdb_full_test.csv')
-    #     # test the uniqueness
-    #     # df = pd.read_csv('./new_tables/omdb_full.csv')
-    #     # print(df.Title.describe())
-    #     # exit()
-
-    # def men_representation(self):
-    #     params = ["Director", "Writer", "Actors"]
-    #     data_df = pd.DataFrame(pd.read_csv("./new_tables/omdb_full.csv"))
-    #     self.train_df = data_df[:int(0.6 * len(data_df))]
-    #     self.valid_df = data_df[int(0.6 * len(data_df)):int(0.8 * len(data_df))]
-    #     self.test_df = data_df[int(0.8 * len(data_df)):]
-    #     train_df = self.train_df
-    #     # exit()
-    #     for p in params:
-    #         # loop for directors, writers, actors
-    #         men = []
-    #         for t, revenue in zip(train_df[p], train_df['BoxOffice']):
-    #             try:
-    #                 for m in t.split(', '):
-    #                     men.append((re.sub(r'\([^)]*\)', '', m).strip(), revenue))
-    #             except AttributeError:
-    #                 print(t)
-    #         for man, revenue in men:
-    #             if man not in self.men_dict:
-    #                 self.men_dict[man] = [revenue]
-    #             elif revenue not in self.men_dict[man]:
-    #                 self.men_dict[man].append(revenue)
-    #             else:
-    #                 continue
-    #     for k, v in self.men_dict.copy().items():
-    #         self.men_dict[k] = sum(v) / len(v)  # average revenue to represent men
-    #         # self.men_dict[k] = v[-1]  # use the latest revenue to represent men
-    #     return self.train_X, self.train_y, self.valid_X, self.valid_y
-
-    # def men_representation_old(self):
-    #     params = ["Director", "Writer", "Actors"]
-    #     train_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_train.csv"))
-    #     valid_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_valid.csv"))
-    #     for p in params:
-    #         # loop for directors, writers, actors
-    #         men = []
-    #         for t, revenue in zip(train_df[p], train_df['BoxOffice']):
-    #             try:
-    #                 for m in t.split(', '):
-    #                     men.append((re.sub(r'\([^)]*\)', '', m).strip(), revenue))
-    #             except AttributeError:
-    #                 print(t)
-    #         for man, revenue in men:
-    #             if man not in self.men_dict:
-    #                 self.men_dict[man] = [revenue]
-    #             elif revenue not in self.men_dict[man]:
-    #                 self.men_dict[man].append(revenue)
-    #             else:
-    #                 continue
-    #         if 0:
-    #             men = []
-    #             for t, revenue in zip(valid_df[p], valid_df['BoxOffice']):
-    #                 try:
-    #                     for m in t.split(', '):
-    #                         men.append((re.sub(r'\([^)]*\)', '', m).strip(), revenue))
-    #                 except AttributeError:
-    #                     print(t)
-    #             for man, revenue in men:
-    #                 if man not in self.men_dict:
-    #                     self.men_dict[man] = [revenue]
-    #                 elif revenue not in self.men_dict[man]:
-    #                     self.men_dict[man].append(revenue)
-    #                 else:
-    #                     continue
-    #     for k, v in self.men_dict.copy().items():
-    #         # self.men_dict[k] = sum(v) / len(v)  # average revenue to represent men
-    #         # self.men_dict[k] = v[-1]  # use the latest revenue to represent men
-    #         self.men_dict[k] = np.median(np.array(v))
-    #     return self.train_X, self.train_y, self.valid_X, self.valid_y
-
-    # def numerical(self):
-    #     params = ["Year", "Runtime", "BoxOffice"]
-    #     train_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_train.csv"))
-    #     valid_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_valid.csv"))
-    #     test_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_test.csv"))
-    #     # train_df = self.train_df
-    #     # valid_df = self.valid_df
-    #     year = np.array(list(map(float, train_df['Year'].dropna()))).reshape(-1, 1)
-    #     boxoffice = np.array(list(map(float, train_df['BoxOffice'].dropna()))).reshape(-1, 1)
-    #     # mm = preprocessing.MinMaxScaler()
-    #     runtime = np.array(list(map(float, train_df['Runtime'].dropna()))).reshape(-1, 1)
-    #     self.train_X = np.c_[year, runtime]
-    #     self.train_y_c = train_df['Label']
-    #     self.train_y_log = np.log(boxoffice)
-    #     self.train_y_log10 = np.log10(boxoffice)
-    #     self.train_y = boxoffice
-    #     year = np.array(list(map(float, valid_df['Year'].dropna()))).reshape(-1, 1)
-    #     boxoffice = np.array(list(map(float, valid_df['BoxOffice'].dropna()))).reshape(-1, 1)
-    #     runtime = np.array(list(map(float, valid_df['Runtime'].dropna()))).reshape(-1, 1)
-    #     self.valid_X = np.c_[year, runtime]
-    #     self.valid_y = boxoffice
-    #     self.valid_y_c = valid_df['Label']
-    #     self.valid_y_log = np.log(boxoffice)
-    #     self.valid_y_log10 = np.log10(boxoffice)
-    #     self.valid_y = boxoffice
-    #     # return mm
-
-    # def one_hot(self):
-    #     params = ["Genre", "Language", "Country"]
-
-    #     def transform(string):
-    #         train_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_train.csv"))
-    #         valid_df = pd.DataFrame(pd.read_csv("./new_tables/new_full_valid.csv"))
-    #         # train_df = self.train_df
-    #         # valid_df = self.valid_df
-    #         enc = preprocessing.LabelEncoder()
-    #         enc.fit(np.r_[np.array(train_df[string].dropna()).reshape(-1, 1), np.array(valid_df[string].dropna()).reshape(-1, 1)])
-    #         # print(list(enc.classes_))
-    #         # pdb.set_trace()
-    #         # append genre, country and language to the feature after encoding
-    #         self.train_X = np.c_[self.train_X, enc.transform(np.array(train_df[string].dropna()).reshape(-1, 1))]
-    #         self.valid_X = np.c_[self.valid_X, enc.transform(np.array(valid_df[string].dropna()).reshape(-1, 1))]
-    #         return enc
-    #     encs = []
-    #     for p in params:
-    #         encs.append(transform(p))
-    #     return self.train_X, self.valid_X, encs
-
-    # def categorical(self):
 
 class Classification:
     def __init__(self, train_x, train_y, valid_x, valid_y, easy_train_X, easy_valid_X):
@@ -544,10 +342,7 @@ class Classification:
         self.easy_valid_X = easy_valid_X
         self.ref = None
         self.easy_ref = None
-        self.ea_false_neg = 0 # jiazhao
-        self.ea_false_pos = 0 # jiazhao
-        self.com_false_neg = 0 # jiazhao
-        self.com_false_pos = 0 # jiazhao
+
     def shuffle(self):
         data = np.c_[self.train_X, self.easy_train_X, self.train_y]
         np.random.shuffle(data)
@@ -561,8 +356,6 @@ class Classification:
     def RandomForest_classification(self):
         model = RFC()
         easy_model = RFC()
-        # model = RFC(class_weight='balanced')
-        # easy_model = RFC(class_weight='balanced')
         model.fit(self.train_X, self.train_y_c)
         easy_model.fit(self.easy_train_X, self.train_y_c)
 
@@ -584,20 +377,6 @@ class Classification:
         self.valid_X = np.array(valid_X)
         self.valid_y = np.array(valid_y)
         self.easy_valid_y = np.array(easy_valid_y)
-<<<<<<< HEAD
-        # print(self.easy_valid_y.shape)
-        # # print(valid_X.shape, easy_valid_X.shape, valid_y.shape, easy_valid_y.shape)
-        #
-        # print('roc score of complex on train:', roc_auc_score(self.train_y_c, model.predict(self.train_X)))
-        # print('roc score of easy on train:', roc_auc_score(self.train_y_c, easy_model.predict(self.easy_train_X)))
-        # print('roc score of complex on valid:', roc_auc_score(self.valid_y[:, 0], model.predict(valid_X)))
-        # print('roc score of easy on valid:', roc_auc_score(self.easy_valid_y[:, 0], easy_model.predict(easy_valid_X)))
-        # print('accuracy of complex on train:', model.score(self.train_X, self.train_y_c))
-        # print('accuracy of easy on train:', easy_model.score(self.easy_train_X, self.train_y_c))
-        # print('accuracy of complex on valid:', model.score(valid_X, self.valid_y[:, 0]))
-        # print('accuracy of easy on valid:', easy_model.score(easy_valid_X, self.easy_valid_y[:, 0]))
-
-=======
         print(self.easy_valid_y.shape)
         # print(valid_X.shape, easy_valid_X.shape, valid_y.shape, easy_valid_y.shape)
 
@@ -609,32 +388,7 @@ class Classification:
         print('accuracy of easy on train:', easy_model.score(self.easy_train_X, self.train_y_c))
         print('accuracy of complex on valid:', model.score(valid_X, self.valid_y[:, 0]))
         print('accuracy of easy on valid:', easy_model.score(easy_valid_X, self.easy_valid_y[:, 0]))
-        """ '1':High group positive class
-            '0': low group negative class
-            false positive: ground true == 0  predcit == 1 
-            false negative: ground true == 1 predict ==0
-        """
-        comlplex_valid_predict = model.predict(self.valid_X)
-        easy_valid_predict = easy_model.predict(self.easy_valid_X)
 
-        for i in  range(len(self.valid_y[:, 0])): # complex 
-            if self.valid_y[:, 0][i] != comlplex_valid_predict[i]:
-                if comlplex_valid_predict[i] == 1:
-                    self.com_false_pos +=1
-                elif comlplex_valid_predict[i] == 0:
-                    self.com_false_neg +=1
-        
-        for i in  range(len(self.easy_valid_y[:, 0])): # easy
-            if self.easy_valid_y[:, 0][i] != easy_valid_predict[i]:
-                if easy_valid_predict[i] == 1:
-                    self.ea_false_pos +=1
-                elif easy_valid_predict[i] == 0:
-                    self.ea_false_neg +=1
-        print('proportion of complex, false positive and false negative:', self.com_false_pos/ len(self.valid_y[:, 0]), self.com_false_neg/ len(self.valid_y[:, 0]))
-        print('proportion of easy, false positive and false negative:', self.ea_false_pos/ len(self.easy_valid_y[:, 0]), self.ea_false_neg/ len(self.easy_valid_y[:, 0]))
-        print('overall  false positive:', (self.com_false_pos + self.ea_false_pos)/ (len(self.valid_y[:, 0])+len(self.easy_valid_y[:, 0])))
-        print('overall  false negative:', (self.com_false_neg+ self.ea_false_neg)/ (len(self.valid_y[:, 0])+len(self.easy_valid_y[:, 0])))
->>>>>>> 12bfd1421f74f51fb9927798edd095f8806641b7
         self.ref = model.predict(valid_X)
         self.easy_ref = easy_model.predict(easy_valid_X)
         return model, easy_model
@@ -686,8 +440,8 @@ class Classification:
                 self.valid_y_high.append(y[1:])
         return self.valid_X_low, self.valid_X_high, self.valid_y_low, self.valid_y_high, \
                self.train_X_low, self.train_X_high, self.train_y_low, self.train_y_high, \
-            self.evalid_X_low, self.evalid_X_high, self.evalid_y_low, self.evalid_y_high, \
-            self.etrain_X_low, self.etrain_X_high, self.etrain_y_low, self.etrain_y_high
+               self.evalid_X_low, self.evalid_X_high, self.evalid_y_low, self.evalid_y_high, \
+               self.etrain_X_low, self.etrain_X_high, self.etrain_y_low, self.etrain_y_high
 
     def SVM(self):
         model = SVC()
@@ -759,11 +513,11 @@ class ClassificationNew(Classification):
                 self._valid_x_complete_low.append(x)
                 self._valid_y_complete_low.append(y[1:])
         return np.c_[np.array(self._train_x_complete_high), np.array(self._train_y_high)], \
-                np.c_[np.array(self._train_x_missing_high), np.array(self._train_y_high)], \
-                np.c_[np.array(self._train_x_complete_low), np.array(self._train_y_low)], \
+               np.c_[np.array(self._train_x_missing_high), np.array(self._train_y_high)], \
+               np.c_[np.array(self._train_x_complete_low), np.array(self._train_y_low)], \
                np.c_[np.array(self._train_x_missing_low), np.array(self._train_y_low)], \
                np.c_[np.array(self._valid_x_complete_high), np.array(self._valid_y_complete_high)], \
-                np.c_[np.array(self._valid_x_complete_low), np.array(self._valid_y_complete_low)], \
+               np.c_[np.array(self._valid_x_complete_low), np.array(self._valid_y_complete_low)], \
                np.c_[np.array(self._valid_x_missing_high), np.array(self._valid_y_missing_high)], \
                np.c_[np.array(self._valid_x_missing_low), np.array(self._valid_y_missing_low)]
 
@@ -780,6 +534,7 @@ class Regression:
         self.tyh = np.array(tyh)
         self.men_dict = men_info
         self.mode = mode
+
     def shuffle_2(self):
         data = np.r_[np.c_[self.train_X, self.train_y], np.c_[self.valid_X, self.valid_y]]
         l = len(data)
@@ -808,9 +563,9 @@ class Regression:
     def GBDT(self, n, step):
         print(len(self.vxl), len(self.vxh))
         best_params = {'n_estimators': 1000, 'max_depth': 10, 'min_samples_split': 2,
-                  'learning_rate': 0.01, 'loss': 'huber'}
+                       'learning_rate': 0.01, 'loss': 'huber'}
         params_high = {'n_estimators': 1000, 'max_depth': 10, 'min_samples_split': 2,
-                  'learning_rate': 0.01, 'loss': 'huber'}
+                       'learning_rate': 0.01, 'loss': 'huber'}
         if self.mode == 'complex':
             model_low = GBR(**params_high)
         else:
@@ -833,13 +588,12 @@ class Regression:
         self.y_pre_train_log = np.r_[self.y_pre_train_log, model_high.predict(self.txh).reshape(-1, 1)]
         self.y_pre_train = np.r_[self.y_pre_train, np.exp(model_high.predict(self.txh).reshape(-1, 1))]
         self.y_pre_valid_log = np.r_[self.y_pre_valid_log, model_high.predict(self.vxh).reshape(-1, 1)]
-        self.y_pre_valid = np.r_[self.y_pre_valid, np.exp(model_high.predict(self.vxh).reshape(-1, 1))]
-
+        return model_high
+        # self.y_pre_valid = np.r_[self.y_pre_valid, np.exp(model_high.predict(self.vxh).reshape(-1, 1))]
         # self.y_pre_train_log = model_high.predict(self.txh).reshape(-1, 1)
         # self.y_pre_train = np.exp(model_high.predict(self.txh).reshape(-1, 1))
         # self.y_pre_valid_log = model_high.predict(self.vxh).reshape(-1, 1)
         # self.y_pre_valid = np.exp(model_high.predict(self.vxh).reshape(-1, 1))
-        return model_high
         if 0:
             print(np.argsort(model_low.feature_importances_))
             x = ['Language', 'Year', 'Country', 'Genre', 'Runtime', 'Actor', 'Director', 'Writer']
@@ -852,7 +606,7 @@ class Regression:
         # gsearch1 = GridSearchCV(estimator=model, param_grid=param_test1)
         # gsearch1.fit(self.train_X, self.train_y)
         # print(gsearch1.best_params_, gsearch1.best_score_)
-    
+
     def linear_regression(self):
         model = LR()
         model.fit(self.train_X, self.train_y)
@@ -861,7 +615,7 @@ class Regression:
         # exit()
         self.y_pre_valid = model.predict(self.valid_X)
         self.y_pre_train = model.predict(self.train_X)
-        
+
     def logistic_regression(self, c):
         model = LoR(C=c)
         # print(self.train_X)
@@ -888,7 +642,7 @@ class Regression:
         # print(self.tyl[0], self.tyllog[0], self.tyhlog[0], self.tyh[0], self.vyl[0], self.vyllog[0], self.vyhlog[0], self.vyh[0])
         for i in range(len(self.y_pre_train)):
             error_smape_train += abs(np.r_[self.tyl, self.tyh][i] - self.y_pre_train[i]) * 2 / (
-                        np.r_[self.tyl, self.tyh][i] + abs(self.y_pre_train[i]))
+                    np.r_[self.tyl, self.tyh][i] + abs(self.y_pre_train[i]))
             error_mae_train += abs(np.r_[self.tyl, self.tyh][i] - self.y_pre_train[i])
             # error_smape_train += abs(self.tyl[i] - self.y_pre_train[i]) * 2 / (
             #             self.tyl[i] + abs(self.y_pre_train[i]))
@@ -909,8 +663,9 @@ class Regression:
         print("test loss are: ", error_smape_test, error_mae_test)
         with open('./result.txt', 'a+') as f:
             f.writelines(list(map(str, [error_smape_train, error_mae_train, error_smape_test, error_mae_test])))
-        return [np.r_[self.tyllog, self.tyhlog], self.y_pre_train_log], [np.r_[self.vyllog, self.vyhlog], self.y_pre_valid_log], \
-                [error_mae_train, error_smape_train, error_mae_test, error_smape_test, len(self.y_pre_valid)]
+        return [np.r_[self.tyllog, self.tyhlog], self.y_pre_train_log], [np.r_[self.vyllog, self.vyhlog],
+                                                                         self.y_pre_valid_log], \
+               [error_mae_train, error_smape_train, error_mae_test, error_smape_test, len(self.y_pre_valid)]
 
     def plot(self):
         plt.figure()
@@ -1028,7 +783,7 @@ class RegressionNew:
         # print(self.tyl[0], self.tyllog[0], self.tyhlog[0], self.tyh[0], self.vyl[0], self.vyllog[0], self.vyhlog[0], self.vyh[0])
         for i in range(len(self.y_pre_train)):
             error_smape_train += abs(np.r_[self.tyl, self.tyh][i] - self.y_pre_train[i]) * 2 / (
-                        np.r_[self.tyl, self.tyh][i] + abs(self.y_pre_train[i]))
+                    np.r_[self.tyl, self.tyh][i] + abs(self.y_pre_train[i]))
             error_mae_train += abs(np.r_[self.tyl, self.tyh][i] - self.y_pre_train[i])
             # error_smape_train += abs(self.tyl[i] - self.y_pre_train[i]) * 2 / (
             #         self.tyl[i] + abs(self.y_pre_train[i]))
@@ -1069,19 +824,12 @@ class RegressionNew:
 
 if __name__ == "__main__":
     Pre = PreProcessing()
-<<<<<<< HEAD
-    Pre.data_cleaning()
-=======
     # Pre.data_cleaning()
-    # exit() 
->>>>>>> 12bfd1421f74f51fb9927798edd095f8806641b7
     Pre.men_representation_old()
     Pre.numerical()
     easy_train_X, easy_valid_X, enc = Pre.one_hot()
     train_X, train_y, valid_X, valid_y, men_info = Pre.categorical()
-    print(train_X.shape,valid_X.shape)
- 
-    # week_11 = True
+
     if week_11:
         Cla = Classification(train_X, train_y, valid_X, valid_y, easy_train_X, easy_valid_X)
         Cla.shuffle()
@@ -1094,19 +842,13 @@ if __name__ == "__main__":
         model_high = Reg.GBDT(1000, 10)
         # Reg.logistic_regression(1)
         # Reg.RandomForest_regression()
-<<<<<<< HEAD
-        # Reg.plot()
-=======
         Reg.plot()
-        
->>>>>>> 12bfd1421f74f51fb9927798edd095f8806641b7
         Train_para, Valid_para, Eval = Reg.evaluation()
-        
 
         eReg = Regression(evxl, evxh, evyl, evyh, etxl, etxh, etyl, etyh, men_info, mode='simple')
         eReg.shuffle()
         eReg.GBDT(1000, 10)
-        # eReg.plot()
+        eReg.plot()
         eTrain_para, eValid_para, eEval = eReg.evaluation()
 
         print('mae_train:', (eEval[0] + Eval[0]) / 2)
@@ -1118,28 +860,27 @@ if __name__ == "__main__":
         one_hot = np.r_[enc[0].transform(['Action']), enc[1].transform(['English']), enc[2].transform(['USA'])]
 
         men = []
-        directors = ['Anthony Russo', 'Joe Russo']
+        directors = ['Anna Boden', 'Ryan Fleck']
         tmp = []
         for director in directors:
             if director in men_info:
                 tmp.append(men_info[director])
         men.append(sum(tmp) / len(tmp))
 
-        writers = ['Christopher Markus', 'Stephen McFeely']
+        writers = ['Anna Boden', 'Ryan Fleck']
         tmp = []
         for writer in writers:
             if writer in men_info:
                 tmp.append(men_info[writer])
         men.append(sum(tmp) / len(tmp))
 
-        actors = ['Brie Larson', 'Scarlett Johansson']
+        actors = ['Brie Larson', 'Samuel L. Jackson']
         tmp = []
         for actor in actors:
             if actor in men_info:
                 tmp.append(men_info[actor])
         men.append(sum(tmp) / len(tmp))
-        captain_marvel = np.r_[[2019, 181], one_hot, men].reshape(1, -1)
-        print(captain_marvel)
+        captain_marvel = np.r_[[2019, 124], one_hot, men].reshape(1, -1)
         print(np.exp(model_high.predict(captain_marvel)))
 
         # predict revenue for infinity war
@@ -1167,7 +908,6 @@ if __name__ == "__main__":
                 tmp.append(med)
         men.append(sum(tmp) / len(tmp))
         infinity_war = np.r_[[2018, 149], one_hot, [259766572], men].reshape(1, -1)
-        print(infinity_war)
         print(np.exp(model_high.predict(infinity_war)))
 
         # predict revenue for fantastic beasts
@@ -1216,6 +956,7 @@ if __name__ == "__main__":
             plt.title('Relation between labels and predictions')
             plt.show()
 
+
         plot(Train_para, Valid_para, eTrain_para, eValid_para)
 
     if week_12:
@@ -1241,8 +982,10 @@ if __name__ == "__main__":
 
         print('mae_train:', (missing_eval[0] + complete_eval[0]) / 2)
         print('smape_train:', (missing_eval[1] + complete_eval[1]) / 2)
-        print('mae_valid:', (missing_eval[2] * complete_eval[-1] + complete_eval[2] * missing_eval[-1]) / (complete_eval[-1] + missing_eval[-1]))
-        print('smape_valid:', (missing_eval[3] * complete_eval[-1] + complete_eval[3] * missing_eval[-1]) / (complete_eval[-1] + missing_eval[-1]))
+        print('mae_valid:', (missing_eval[2] * complete_eval[-1] + complete_eval[2] * missing_eval[-1]) / (
+                    complete_eval[-1] + missing_eval[-1]))
+        print('smape_valid:', (missing_eval[3] * complete_eval[-1] + complete_eval[3] * missing_eval[-1]) / (
+                    complete_eval[-1] + missing_eval[-1]))
 
 
         def plot(Train_para, Valid_para, eTrain_para, eValid_para):
@@ -1260,5 +1003,3 @@ if __name__ == "__main__":
 
         plot(complete_train_para, complete_valid_para, missing_train_para, missing_valid_para)
 
-
-    

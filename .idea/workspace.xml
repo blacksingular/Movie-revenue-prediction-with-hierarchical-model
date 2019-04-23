@@ -2,17 +2,89 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8d40a57-8429-47ad-8fb7-97ec37da5f0a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/new_tables/new_full_train_11.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/new_tables/new_full_valid_11.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/GUI.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/improvement.py" beforeDir="false" afterPath="$PROJECT_DIR$/improvement.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_tables/new_full_train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/new_full_train.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_tables/new_full_valid.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/new_full_valid.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/new_tables/omdb_full_test.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/omdb_full_test.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/new_tables/omdb_full_train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/omdb_full_train.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/new_tables/omdb_full_valid.csv" beforeDir="false" afterPath="$PROJECT_DIR$/new_tables/omdb_full_valid.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2008_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2008_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2009_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2009_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2009_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2009_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2010_complex_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2010_complex_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2010_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2010_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2010_complex_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2010_complex_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2010_complex_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2010_complex_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2010_easy_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2010_easy_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2010_easy_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2010_easy_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2010_easy_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2010_easy_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2010_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2010_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2011_complex_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2011_complex_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2011_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2011_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2011_complex_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2011_complex_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2011_complex_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2011_complex_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2011_easy_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2011_easy_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2011_easy_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2011_easy_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2011_easy_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2011_easy_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2011_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2011_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2012_complex_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2012_complex_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2012_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2012_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2012_complex_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2012_complex_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2012_complex_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2012_complex_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2012_easy_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2012_easy_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2012_easy_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2012_easy_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2012_easy_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2012_easy_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2012_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2012_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2013_complex_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2013_complex_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2013_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2013_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2013_complex_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2013_complex_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2013_complex_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2013_complex_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2013_easy_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2013_easy_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2013_easy_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2013_easy_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2013_easy_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2013_easy_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2013_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2013_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2014_complex_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2014_complex_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2014_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2014_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2014_complex_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2014_complex_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2014_complex_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2014_complex_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2014_easy_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2014_easy_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2014_easy_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2014_easy_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2014_easy_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2014_easy_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2014_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2014_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2015_complex_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2015_complex_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2015_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2015_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2015_complex_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2015_complex_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2015_complex_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2015_complex_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2015_easy_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2015_easy_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2015_easy_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2015_easy_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2015_easy_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2015_easy_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2015_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2015_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2016_complex_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2016_complex_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2016_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2016_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2016_complex_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2016_complex_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2016_complex_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2016_complex_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2016_easy_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2016_easy_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2016_easy_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2016_easy_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2016_easy_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2016_easy_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2016_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2016_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2017_complex_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2017_complex_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2017_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2017_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2017_complex_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2017_complex_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2017_complex_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2017_complex_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2017_easy_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2017_easy_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2017_easy_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2017_easy_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2017_easy_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2017_easy_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2017_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2017_men.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2018_complex_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2018_complex_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2018_complex_feature.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2018_complex_feature.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2018_complex_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2018_complex_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2018_complex_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2018_complex_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2018_easy_class.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2018_easy_class.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2018_easy_regression_0.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2018_easy_regression_0.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2018_easy_regression_1.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2018_easy_regression_1.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkls/2018_men.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/pkls/2018_men.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/result.txt" beforeDir="false" afterPath="$PROJECT_DIR$/result.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage.py" beforeDir="false" afterPath="$PROJECT_DIR$/storage.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,11 +94,11 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/SI699$KG.coverage" NAME="KG Coverage Results" MODIFIED="1550738013170" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/SI699$storage.coverage" NAME="storage Coverage Results" MODIFIED="1555974624583" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SI699$storage.coverage" NAME="storage Coverage Results" MODIFIED="1555986936910" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SI699$a.coverage" NAME="a Coverage Results" MODIFIED="1552970118312" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SI699$utils.coverage" NAME="utils Coverage Results" MODIFIED="1555579408982" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SI699$quicksort.coverage" NAME="quicksort Coverage Results" MODIFIED="1551644632064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/SI699$improvement.coverage" NAME="improvement Coverage Results" MODIFIED="1555579924952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SI699$improvement.coverage" NAME="improvement Coverage Results" MODIFIED="1555984723771" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -44,11 +116,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/improvement.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="19" column="37" lean-forward="true" selection-start-line="19" selection-start-column="37" selection-end-line="19" selection-end-column="37" />
+            <state relative-caret-position="499">
+              <caret line="1005" selection-start-line="1005" selection-end-line="1005" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -56,25 +128,13 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/storage.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="118">
-              <caret line="204" column="74" selection-start-line="204" selection-start-column="74" selection-end-line="204" selection-end-column="74" />
+            <state relative-caret-position="371">
+              <caret line="301" column="30" lean-forward="true" selection-start-line="301" selection-start-column="30" selection-end-line="301" selection-end-column="30" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utils.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="126" column="65" selection-start-line="126" selection-start-column="65" selection-end-line="126" selection-end-column="65" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -110,13 +170,23 @@
       <find>self.train_y_log</find>
       <find>abs</find>
       <find>one_hot</find>
+      <find>Moive</find>
+      <find>Box</find>
+      <find>np.</find>
+      <find>np.log10</find>
+      <find>GBR</find>
+      <find>print</find>
+      <find>t2</find>
       <find>np.log</find>
+      <find>Caption</find>
     </findStrings>
     <replaceStrings>
       <replace>self.year_range</replace>
       <replace>self.y_pre_valid</replace>
       <replace>self.valid_X</replace>
       <replace>model</replace>
+      <replace>easy_data_zero</replace>
+      <replace>Movie</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -135,6 +205,7 @@
         <option value="$PROJECT_DIR$/captain_marvel.py" />
         <option value="$PROJECT_DIR$/new-improvement.py" />
         <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/GUI.py" />
         <option value="$PROJECT_DIR$/improvement.py" />
         <option value="$PROJECT_DIR$/storage.py" />
       </list>
@@ -346,21 +417,25 @@
       <workItem from="1554762939320" duration="1867000" />
       <workItem from="1555451905401" duration="27469000" />
       <workItem from="1555956817531" duration="6441000" />
+      <workItem from="1555975278529" duration="9006000" />
+      <workItem from="1555984505574" duration="24000" />
+      <workItem from="1555984713706" duration="41000" />
+      <workItem from="1555984805554" duration="2737000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="199313000" />
+    <option name="totallyTimeSpent" value="211121000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.48016998" visible="true" weight="0.16420911" />
-      <window_info id="Structure" order="1" sideWeight="0.51983005" side_tool="true" visible="true" weight="0.16420911" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.47450426" visible="true" weight="0.17225201" />
+      <window_info id="Structure" order="1" sideWeight="0.52549577" side_tool="true" visible="true" weight="0.17225201" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.24362606" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.23937677" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -486,7 +561,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
+        <state relative-caret-position="2880">
           <caret line="126" column="65" selection-start-line="126" selection-start-column="65" selection-end-line="126" selection-end-column="65" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
@@ -494,10 +569,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/storage.py">
+    <entry file="file://$PROJECT_DIR$/GUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="204" column="74" selection-start-line="204" selection-start-column="74" selection-end-line="204" selection-end-column="74" />
+        <state relative-caret-position="154">
+          <caret line="69" column="51" lean-forward="true" selection-start-line="69" selection-start-column="51" selection-end-line="69" selection-end-column="51" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
           </folding>
@@ -506,10 +581,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/improvement.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="19" column="37" lean-forward="true" selection-start-line="19" selection-start-column="37" selection-end-line="19" selection-end-column="37" />
+        <state relative-caret-position="499">
+          <caret line="1005" selection-start-line="1005" selection-end-line="1005" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/storage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="371">
+          <caret line="301" column="30" lean-forward="true" selection-start-line="301" selection-start-column="30" selection-end-line="301" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -49,9 +49,9 @@ def GUI():
         movie_name = var_movie_name.get()  # get movie name 
         try:
             revenue = movie_search_dict[movie_name]
-            tk.messagebox.showinfo('Moive Search Result', 'Movie name:' + movie_name + '\n'+ 'Box office: $' + str(revenue))
+            tk.messagebox.showinfo('Movie Search Result', 'Movie name:' + movie_name + '\n'+ 'Box office: $' + str(revenue))
         except KeyError:
-            tk.messagebox.showerror('Moive Search Result',movie_name+' Not found.\n You can try using prediction')
+            tk.messagebox.showerror('Movie Search Result',movie_name+' Not found.\n You can try using prediction')
 
     def movie_prediction():
         movie_name = var_movie_name.get()  # get movie name 
@@ -65,11 +65,11 @@ def GUI():
                 window_prediction.destroy()
         try:
             revenue = movie_search_dict[movie_name]
-            tk.messagebox.showinfo('Moive Prediction Result', movie_name+' has existed in our dataset' + '\n'+ 'Box office: '+str(revenue))
+            tk.messagebox.showinfo('Movie Prediction Result', movie_name+' has existed in our dataset' + '\n'+ 'Box office: '+str(revenue))
         except KeyError:
             window_prediction = tk.Toplevel(window)
             window_prediction.geometry('450x400')
-            window_prediction.title('Moive Box office prediction')
+            window_prediction.title('Movie Box office prediction')
             new_movie_name = tk.StringVar()#将输入的注册名赋值给变量
             new_movie_name.set('Avengers: Endgame')#将最初显示定为'example@python.com'
             tk.Label(window_prediction, text='Movie title: ').place(x=10, y= 10)#将`User name:`放置在坐标（10,10）。
