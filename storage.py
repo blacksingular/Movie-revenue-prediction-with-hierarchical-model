@@ -238,6 +238,7 @@ def test():
         print('prediction: ', np.exp(pkl.load(f).predict(features[year][num][1:].reshape(1, -1))))
 
 def GUI(year=2018, directors=['David Yates'], writers=['J.K. Rowling'], actors = ['Eddie Redmayne', 'Katherine Waterston'], genre='Action', language='English', country='UK', runtime=134):
+
     with open('./pkls/' + str(min(year, 2018)) + '_men.pkl', 'rb') as f:
         men_info = pkl.load(f)
     with open('./pkls/' + str(min(year, 2018)) + '_encoder.pkl', 'rb') as f:
@@ -275,10 +276,12 @@ def GUI(year=2018, directors=['David Yates'], writers=['J.K. Rowling'], actors =
         vector = np.r_[[year, runtime], one_hot, men].reshape(1, -1)
     else:
         vector = np.r_[[year, runtime], one_hot].reshape(1, -1)
-    print(vector)
+    # print(vector)
     with open('./pkls/' + str(min(year, 2018)) + mode + '_regression_' + str(class_model.predict(vector)[0]) + '.pkl', 'rb') as f:
-        print('prediction: ', 10 ** pkl.load(f).predict(vector) * 1.7)
-
+        model = pkl.load(f)
+        print('prediction: ', 10 ** model.predict(vector) * 1.7)
+        prediction = 10 ** model.predict(vector) * 1.7
+        return prediction
 def get_length():
     for year in range(2009, 2019):
         with open('./pkls/' + str(year) + '_easy_feature.pkl', 'rb') as f:
@@ -302,5 +305,5 @@ if __name__ == '__main__':
     # store_regression_model()
 
     # test()
-    GUI()
+    prediction = GUI()
     # get_length()

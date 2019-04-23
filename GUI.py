@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox
 import pandas as pd
+from storage import *
 
 
 
@@ -16,7 +17,7 @@ def data_set():
     # print(movie_search_dict)
 
 
-def GUI():
+def GUI_interface():
     #####windows 
     # welcome image
 
@@ -56,19 +57,37 @@ def GUI():
     def movie_prediction():
         movie_name = var_movie_name.get()  # get movie name 
         def Movie_predit_insert():
-                
-                np = new_movie_name.get()
-                npf = new_directors.get()
-                nn = new_writers.get()
-                na = new_actors.get()
 
-                window_prediction.destroy()
+                nm = new_movie_name.get()
+                nd = new_directors.get()
+                if ',' in nd:
+                    nd = nd.split(', ')
+                nw = new_writers.get()
+                if ', ' in nw:
+                    nw = nw.split(', ')
+                na = new_actors.get()
+                if ', ' in na:
+                    na = na.split(', ')
+                
+                nt = new_theme.get()
+                nc = new_count.get()
+                ny = int(new_year.get())
+                nl = new_lang.get()
+                nr = int(new_runtime.get())
+                # ng = int(new_runtime.get())
+                #year=2018, directors=['David Yates'], writers=['J.K. Rowling'], actors = ['Eddie Redmayne', 'Katherine Waterston'], genre='Action', language='English', country='UK', runtime=134
+                prediction = GUI(ny, nd, nw, na, nt, nl, nc, nr)
+                tk.messagebox.showinfo('Movie Prediction Result', nm+ '\n'+ 'Box office: '+str(prediction))
+                # print('1,',prediction)
+                # window_prediction.destroy()
+
+
         try:
             revenue = movie_search_dict[movie_name]
             tk.messagebox.showinfo('Movie Prediction Result', movie_name+' has existed in our dataset' + '\n'+ 'Box office: '+str(revenue))
         except KeyError:
             window_prediction = tk.Toplevel(window)
-            window_prediction.geometry('450x400')
+            window_prediction.geometry('500x450')
             window_prediction.title('Movie Box office prediction')
             new_movie_name = tk.StringVar()#将输入的注册名赋值给变量
             new_movie_name.set('Avengers: Endgame')#将最初显示定为'example@python.com'
@@ -115,9 +134,21 @@ def GUI():
             entry_usr_pwd_confirm = tk.Entry(window_prediction, textvariable=new_count, show=None)
             entry_usr_pwd_confirm.place(x=150, y=250)
 
+            new_year = tk.StringVar()
+            new_year.set('2019')
+            tk.Label(window_prediction, text='Year').place(x=10, y= 290)
+            entry_usr_pwd_confirm = tk.Entry(window_prediction, textvariable=new_year, show=None)
+            entry_usr_pwd_confirm.place(x=150, y=290)
+
+            new_runtime = tk.StringVar()
+            new_runtime.set('134')
+            tk.Label(window_prediction, text='Runtime').place(x=10, y= 330)
+            entry_usr_pwd_confirm = tk.Entry(window_prediction, textvariable=new_runtime, show=None)
+            entry_usr_pwd_confirm.place(x=150, y=330)
+            
             # button of predict
             btn_comfirm_sign_up = tk.Button(window_prediction, text='Predict', command=Movie_predit_insert)
-            btn_comfirm_sign_up.place(x=150, y=320)
+            btn_comfirm_sign_up.place(x=150, y=390)
             
 
     ### 按钮 :
@@ -131,4 +162,4 @@ def GUI():
     window.mainloop()
 
 data_set()
-GUI()
+GUI_interface()
