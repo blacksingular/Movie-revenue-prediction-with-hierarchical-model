@@ -1,10 +1,6 @@
-import urllib
-from  urllib import *
-import ast
-
 # import wptools
 import pickle
-#import omdb
+# import omdb
 import os
 import urllib
 from urllib import request
@@ -12,7 +8,7 @@ import requests
 import ast
 # from imdb import IMDb
 from unidecode import unidecode
-
+from bs4 import BeautifulSoup
 from urllib.parse import unquote
 from tqdm import tqdm
 
@@ -22,6 +18,7 @@ wiki_home = 'https://en.wikipedia.org'
 year_range = [year for year in range(2008, 2019)]
 
 
+# get movie list over given years
 def extract_movielist():
     year_movielist = dict()
     for year in year_range:
@@ -45,7 +42,7 @@ def extract_movielist():
                     # print(link.get('href'))
             # print(pre_next_list)
             if pre_next_list[0] == pre_next_list[1]:
-                if first_url_falg: 
+                if first_url_falg:
                     # print('first page:')
                     next_url = pre_next_list[1]
                     indices_start = [i for i, x in enumerate(link_list) if x == next_url][0]
@@ -74,9 +71,11 @@ def extract_movielist():
         year_movielist[year] = movie_peryear
         with open('./tables/year_movielist.pkl','wb') as f:
             pickle.dump(year_movielist,f)
-    
+
     return year_movielist
 
+
+# crawl using wikipedia
 def extract_infobox(year_movielist):
     movie_infobox = {}
     invalid_movies = []
@@ -124,10 +123,11 @@ def extract_infobox(year_movielist):
         #with open('/tables/invalid_ones.pkl', 'wb') as f:
         #   pickle.dump(invalid_movies, f)
         print(len(invalid_movies), len(movie_list), len(movie_infobox))
-        
 
+
+# crawl using IMDB API
 def imdb_API(clean_moviename_list):
-    
+
     # create an instance of the IMDb class
     ia = IMDb()
     # get a movie
@@ -141,10 +141,10 @@ def imdb_API(clean_moviename_list):
     print(len(clean_moviename_list))
 
     # print(clean_moviename_list[0], exists_list[0])
-    file = open('./tables/movie_id.txt','a+') 
+    file = open('./tables/movie_id.txt','a+')
 
     for movie in tqdm(clean_moviename_list):
-        
+
         # print(movie)
         # movie = ia.search_movie(movie)[0]
         # print(ia.search_movie(movie)[0].movieID)
@@ -163,9 +163,9 @@ def get_movie_list():
         print('Year movielist exist')
         with open('./tables/year_movielist.pkl', 'rb') as f:
             year_movielist = pickle.load(f)
-    else:   
+    else:
         year_movielist = extract_movielist()
-    
+
     clean_moviename_list = set()
     for year, movie_list in (year_movielist.items()):
         for movie in movie_list:
@@ -180,7 +180,7 @@ def get_movie_list():
     movie_id_list = imdb_API(clean_moviename_list)
 
     print(len(movie_id_list))
-    
+
     # extract_infobox(year_movielist)
     # with open('./tables/2018.pkl','rb') as f :
     #     movie_infobox = pickle.load(f,protocol=3)
@@ -201,12 +201,13 @@ def get_movie_list():
     # weekly.clean_data()
     # print(weekly.to_json())
 
+# crawl using OMDB API
 def omdb_request():
     my_id = "efc4c1c1"
     page = "http://www.omdbapi.com/?i="
     #file_path = ('./tables/movie_id.txt')
     file_path = ('./tables/movie_id_2000to2007and2019.txt')
-#    out_file_path = ('./tables/movie_info.txt')
+    #out_file_path = ('./tables/movie_info.txt')
     out_file_path = ('./tables/movie_info_2.txt')
     assert os.path.exists(file_path) == True
     with open(file_path, 'r') as f:
@@ -220,6 +221,7 @@ def omdb_request():
             f.write(movie_id[i] + "\t" + unidecode(unquote(info)) + "\n")
             f.flush()
     f.close()
+
 
 
 if __name__ == "__main__":
