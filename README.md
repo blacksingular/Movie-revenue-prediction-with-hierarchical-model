@@ -1,6 +1,6 @@
 # SI699: Movie Revenue Prediction: Based on hierarchical regression model
 
-Code for SI 699 course project: Using hierechical regression model to predcit the movie revenue based on data from IMDB public dataset. Here are the [result](../blob/master/result.md) and [final report(poster)](../blob/master/Si699.Report).
+Code for SI 699 course project: Using hierechical regression model to predcit the movie revenue based on data from IMDB public dataset. Here are the [result](../blob/master/SI699.md) and [final report(poster)](../blob/master/SI699_poster_Movie_prediction.pdf).
 
 ## Getting Started
 
