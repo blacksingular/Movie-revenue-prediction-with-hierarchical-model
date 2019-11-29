@@ -23,7 +23,7 @@ pip install -U scikit-learn
 ### Update Data Set
 
 we grabed 3259 movies metadata (2008 - 2018) from [IMDB.com](https://www.imdb.com/) using [OMDB API](http://www.omdbapi.com/).
-If you would like to grab latest data. Run crawler.py
+If you would like to grab latest data. Run crawl.py
 ```
 python crawl.py
 ```
